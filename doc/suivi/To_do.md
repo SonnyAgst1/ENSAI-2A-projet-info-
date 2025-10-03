@@ -1,6 +1,6 @@
 ### à faire dans le diagramme UML
--il manque dans la classe utilisateur (diagramme UML) l'id_activité
--dans le diagramme uml dans la classe activité, l'attribut commentaire est une liste de commentaire
+- il manque dans la classe utilisateur (diagramme UML) l'id_activité
+- dans le diagramme uml dans la classe activité, l'attribut commentaire est une liste de commentaire
 
 
 ### fonctionnalités optionelles 
