@@ -1,6 +1,8 @@
 import datetime as dt
 
 from utilisateur import Utilisateur
+from commentaire import Commentaire
+
 
 class Activité:
     """
@@ -18,13 +20,13 @@ class Activité:
         description: str,
         fichiergpx: str,
         like: set <id_utilisateur>,
-        commentaire: str,
+        commentaire: list(Commentaire),
         denivelle: int,
         calories: int
         ):
         """
         Initialise une activité
-        
+
         Args:
             id_activite (int): Identifiant unique de l'activité
             utilisateur (Utilisateur): L'utilisateur qui fait l'activité
@@ -39,18 +41,18 @@ class Activité:
             denivelle (int): le dénivellé réalisé lors de l'activité
             calories (int): le nombre de calories dépensées lors de l'activité
         """
-        self._id_activite = id_activite
-        self._utilisateur = utilisateur
-        self._nom = nom 
-        self._type_sport = type_sport
-        self._dateActivite = dateActivite
-        self._dureeActivite = dureeActivite
-        self._description = description
-        self._fihiergpx = fichiergpx
-        self._like = like
-        self._commentaire = commentaire
-        self._denivelle = denivelle
-        self._calories = calories
+        self._id_activite = id_activite,
+        self._utilisateur = utilisateur,
+        self._nom = nom,
+        self._type_sport = type_sport,
+        self._dateActivite = dateActivite,
+        self._dureeActivite = dureeActivite,
+        self._description = description,
+        self._fihiergpx = fichiergpx,
+        self._like = like,
+        self._commentaire = commentaire,
+        self._denivelle = denivelle,
+        self._calories = calories,
 
     # Getters
     @property
@@ -77,7 +79,7 @@ class Activité:
     def dateActivite(self):
         """Retourne la date de l'activité"""
         return self._dateActivite
-    
+
     @property
     def dureeActivite(self):
         """Retourne la durée de l'activité"""
@@ -91,7 +93,7 @@ class Activité:
     @property
     def fichiergpx(self):
         """Retourne le fichier gpx de l'activité"""
-        return self._fichier gpx
+        return self._fichiergpx
 
     @property
     def like(self):
@@ -146,7 +148,6 @@ class Activité:
         else:
             raise ValueError("La durée de l'activité doit être un temps")
 
-
     @description.setter
     def nom(self, nouvelle_description):
         """Modifie la description de l'activité"""
@@ -172,22 +173,36 @@ class Activité:
             raise ValueError("Le denivellé doit être un entier")
 
     @calories.setter
-    def nom(self, nouvelles_calories):
+    def nom(self, nouvelle_calorie):
         """Modifie le nombre de calories dépensées"""
-        if isinstance(nouvelles_calories, int) and nouvelles_calories.strip():
+        if isinstance(nouvelle_calorie, int) and nouvelle_calorie.strip():
             self._calories = nouvelle_calorie
         else:
             raise ValueError("Le nombre de calories dépensées doit être un entier")
 
     # Méthodes métier
-    def compte_like(self, like) ->int:
+    def compte_like(self, like) -> int:
         """
         Compte le nombre de like d'une activité
-        
+
         Args:
             like (set <id_utilisateur>): L'ensemble des utilisateurs qui ont like
-        
+
         Returns:
             int: Le nombre de likes
         """
-        nb_likes = len()
+        nb_likes = len(self._like)
+        return nb_likes
+
+    def compte_commentaire(self, commentaire: str) -> int:
+        """
+        Compte le nombre de commentaires d'une activité
+
+        Args:
+            commentaire (str): un commentaire
+
+        Returns:
+            int: Le nombre de likes
+        """
+        nb_com = len(self._commentaire)
+        return nb_com
