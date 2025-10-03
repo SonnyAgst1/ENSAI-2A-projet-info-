@@ -1,3 +1,6 @@
+from datetime import date, datetime
+import hashlib
+
 class Utilisateur: 
     """ Classe représentant un utilisateur
     """
