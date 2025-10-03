@@ -66,7 +66,7 @@ fil.ajouterActivite("Sortie vélo - 20 km")
 # Rafraîchir le fil
 fil.rafraichirFil()
 
-
+ibyb
 
 
 
