@@ -19,11 +19,11 @@ class Activité:
         dureeActivite: dt.time,
         description: str,
         fichiergpx: str,
-        like: set <id_utilisateur>,
+        like: list(Utilisateur._id_utilisateur),
         commentaire: list(Commentaire),
         denivelle: int,
         calories: int
-        ):
+    ):
         """
         Initialise une activité
 
@@ -191,8 +191,7 @@ class Activité:
         Returns:
             int: Le nombre de likes
         """
-        nb_likes = len(self._like)
-        return nb_likes
+        return len(self._likes)
 
     def compte_commentaire(self, commentaire: str) -> int:
         """
@@ -204,7 +203,4 @@ class Activité:
         Returns:
             int: Le nombre de likes
         """
-        nb_com = len(self._commentaire)
-        return nb_com
-
-    def getNombreLikes
+        return len(self._commentaire)
