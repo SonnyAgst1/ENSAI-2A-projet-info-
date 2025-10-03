@@ -206,3 +206,5 @@ class Activité:
         """
         nb_com = len(self._commentaire)
         return nb_com
+
+    def getNombreLikes
