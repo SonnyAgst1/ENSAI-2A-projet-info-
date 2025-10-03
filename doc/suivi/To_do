@@ -1,3 +1,4 @@
 -il manque dans la classe utilisateur (diagramme UML) l'id_activité
 - si on a le temps, on rajoute une photo de profil
 - faire la base de données en SQLlite (un fichier .db) en local 
+-dans le diagramme uml dans la classe activité, l'attribut commentaire est une liste de commentaire 
