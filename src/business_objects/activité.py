@@ -178,3 +178,16 @@ class Activité:
             self._calories = nouvelle_calorie
         else:
             raise ValueError("Le nombre de calories dépensées doit être un entier")
+
+    # Méthodes métier
+    def compte_like(self, like) ->int:
+        """
+        Compte le nombre de like d'une activité
+        
+        Args:
+            like (set <id_utilisateur>): L'ensemble des utilisateurs qui ont like
+        
+        Returns:
+            int: Le nombre de likes
+        """
+        nb_likes = len()
