@@ -1,6 +1,5 @@
 import datetime as dt
 import gpxpy
-import gpxpy.gpx
 
 from utilisateur import Utilisateur
 from commentaire import Commentaire
@@ -276,13 +275,14 @@ class Activité:
         return int(calories_totales)
 
     def creerActivite(
+        cls,
         fichier_gpx: str,
         id_activite: int,
         utilisateur: Utilisateur,
         nom: str,
         type_sport: str,
         description: str = ""
-    ) -> Activité:
+    ):
         """
         Crée une activité à partir d'un fichier GPX
 
@@ -296,11 +296,8 @@ class Activité:
 
         Returns:
             Activité: Une nouvelle instance d'Activité avec les données extraites du GPX
-
-        Raises:
-            FileNotFoundError: Si le fichier GPX n'existe pas
-            ValueError: Si le fichier GPX est invalide ou vide
         """
+
         try:
             with open(fichier_gpx, 'r') as gpx_file:
                 gpx = gpxpy.parse(gpx_file)
@@ -344,12 +341,12 @@ class Activité:
                     denivelle += diff
         denivelle = int(denivelle)
 
-        # Calculer les calories (formule approximative basée sur la durée et le type de sport)
+        # Calculer les calories
         duree_heures = duree_totale.seconds / 3600 if points[0].time and points[-1].time else 0
-        calories = calculer_calories(type_sport, duree_heures, denivelle)
+        calories = cls._calculer_calories(type_sport, duree_heures, denivelle)
 
-        # Créer l'activité
-        activite = Activité(
+        # Créer l'activité avec cls au lieu de Activité
+        return cls(
             id_activite=id_activite,
             utilisateur=utilisateur,
             nom=nom,
@@ -363,5 +360,3 @@ class Activité:
             denivelle=denivelle,
             calories=calories
         )
-
-        return activite
