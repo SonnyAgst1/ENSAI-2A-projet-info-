@@ -244,7 +244,7 @@ class Activité:
         elif type_sport_lower == "marche":
             return duree_minutes/distance
 
-    def _calculer_calories(type_sport: str, duree_heures: float, denivelle: int) -> int:
+    def calculer_calories(type_sport: str, duree_heures: float, denivelle: int) -> int:
         """
         Calcule approximativement les calories dépensées
 
@@ -271,7 +271,7 @@ class Activité:
         cal_base = calories_par_heure.get(type_sport_lower, 400)
 
         # Calories totales = calories de base + bonus pour le dénivelé
-        calories_totales = cal_base * duree_heures + (denivelle * 0.1)
+        calories_totales = cal_base*duree_heures + (denivelle*0.1)
 
         return int(calories_totales)
 
@@ -346,7 +346,7 @@ class Activité:
 
         # Calculer les calories (formule approximative basée sur la durée et le type de sport)
         duree_heures = duree_totale.seconds / 3600 if points[0].time and points[-1].time else 0
-        calories = _calculer_calories(type_sport, duree_heures, denivelle)
+        calories = calculer_calories(type_sport, duree_heures, denivelle)
 
         # Créer l'activité
         activite = Activité(
