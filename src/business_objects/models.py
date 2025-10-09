@@ -1,9 +1,7 @@
 from sqlalchemy import create_engine, Column, Integer, String, Float, Date, Text, LargeBinary, ForeignKey, Table
 from sqlalchemy.orm import declarative_base, relationship
+from database import Base
 
-# --- Initialisation de la Base ---
-# C'est l'objet qui "possède" toutes les classes déclaratives (vos tables)
-Base = declarative_base() 
 
 
 # --- Tables de Liaison (Many-to-Many) ---
