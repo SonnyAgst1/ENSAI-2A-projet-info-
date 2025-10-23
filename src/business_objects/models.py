@@ -2,8 +2,6 @@ from sqlalchemy import create_engine, Column, Integer, String, Float, Date, Text
 from sqlalchemy.orm import declarative_base, relationship
 from database import Base
 
-
-
 # --- Tables de Liaison (Many-to-Many) ---
 
 # Table de liaison pour les followers (Follow)

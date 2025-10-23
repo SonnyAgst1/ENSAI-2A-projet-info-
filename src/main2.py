@@ -1,33 +1,35 @@
 
-from database.py import engine, SessionLocal
-from models import Base, Utilisateur
+from database import engine, SessionLocal, Base
+from business_objects.models import Utilisateur  # importe le modèle
+from objects.dao.crud import create_user, get_all_users, update_user, delete_user
 
+def init_db():
+    """Crée physiquement les tables dans la base SQLite."""
+    Base.metadata.create_all(bind=engine)
+    print(" Tables créées / vérifiées.")
 
-#  Crée physiquement les tables
-Base.metadata.create_all(engine)
-print("✅ Base SQLite créée avec succès !")
+if __name__ == "__main__":
+    init_db()
 
-# Ouvre une session
-db = SessionLocal()
+    # CREATE
+    user = create_user("Dupont", "Alice", 26, "Alicia", "alice@example.com", "secret123")
+    print(f"\n Utilisateur créé : {user.id} - {user.pseudo}")
 
-#  Ajoute des utilisateurs
-u1 = Utilisateur(
-    nom="Dupont", prenom="Alice", age=25, taille=1.68,
-    pseudo="Alicia", poids=60.0, mail="alice@example.com",
-    telephone=123456789, mdp="secret123"
-)
-u2 = Utilisateur(
-    nom="Martin", prenom="Bob", age=30, taille=1.80,
-    pseudo="Bobby", poids=75.0, mail="bob@example.com",
-    telephone=987654321, mdp="azerty"
-)
+    # READ
+    print("\n👥 Liste des utilisateurs :")
+    for u in get_all_users():
+        print(f"- {u.id}: {u.nom} {u.prenom} ({u.pseudo})")
 
-db.add_all([u1, u2])
-db.commit()
-print(" Utilisateurs ajoutés !")
+    # UPDATE
+    updated = update_user(user.id, nom="Durand", pseudo="Alicia06")
+    print(f"\n Utilisateur mis à jour : {updated.id} - {updated.nom} ({updated.pseudo})")
 
-#  Vérifie
-for u in db.query(Utilisateur).all():
-    print(f"{u.id}: {u.nom} {u.prenom} ({u.pseudo})")
+    # DELETE
+    delete_user(user.id)
+    print(f"\n Utilisateur {user.id} supprimé.")
 
-db.close()
+    # READ again
+    print("\n👥 Utilisateurs restants :")
+    for u in get_all_users():
+        print(f"- {u.id}: {u.nom} {u.prenom} ({u.pseudo})")
+

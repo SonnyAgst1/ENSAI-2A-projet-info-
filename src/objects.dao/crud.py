@@ -1,66 +1,63 @@
-# src/objects.dao/crud.py
 
-from business_objects.models import Utilisateur, Activite, Commentaire
-from __init__ import get_session 
-from sqlalchemy.exc import IntegrityError # Pour gérer les erreurs de contraintes SQL (ex: pseudo déjà pris)
+from database import SessionLocal
+from business_objects.models import Utilisateur
 
-# --- Opérations Utilisateur ---
-
-def create_user(nom, prenom, pseudo, mail, mdp):
-    """Crée et sauvegarde un nouvel utilisateur."""
-    session = get_session()
+def create_user(nom, prenom, age, pseudo, mail, mdp):
+    """CREATE : ajoute un utilisateur en base"""
+    db = SessionLocal()
     try:
-        new_user = Utilisateur(
-            nom=nom, prenom=prenom, pseudo=pseudo, mail=mail, mdp=mdp
-            # Les autres champs seront NULL par défaut si non fournis
+        user = Utilisateur(
+            nom=nom,
+            prenom=prenom,
+            age=age,
+            pseudo=pseudo,
+            mail=mail,
+            mdp=mdp
         )
-        session.add(new_user)
-        session.commit()
-        return new_user
-    except IntegrityError:
-        session.rollback()
-        raise ValueError(f"Erreur: Le pseudo '{pseudo}' ou l'e-mail '{mail}' est déjà utilisé.")
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+        return user
     finally:
-        session.close()
+        db.close()
 
-def get_user_by_pseudo(pseudo):
-    """Récupère un utilisateur par son pseudo."""
-    session = get_session()
+
+def get_all_users():
+    """READ : retourne la liste des utilisateurs"""
+    db = SessionLocal()
     try:
-        # Le .first() retourne l'objet Utilisateur ou None
-        return session.query(Utilisateur).filter(Utilisateur.pseudo == pseudo).first()
+        return db.query(Utilisateur).all()
     finally:
-        session.close()
+        db.close()
 
-# --- Opérations Activité ---
 
-def create_activity(user_id, nom, type_sport, date_activite, duree_activite):
-    """Crée et sauvegarde une nouvelle activité liée à un utilisateur."""
-    session = get_session()
+def update_user(user_id, **kwargs):
+    """UPDATE : modifie un utilisateur en base"""
+    db = SessionLocal()
     try:
-        new_activity = Activite(
-            utilisateur_id=user_id, 
-            nom=nom, 
-            type_sport=type_sport, 
-            date_activite=date_activite, 
-            duree_activite=duree_activite
-        )
-        session.add(new_activity)
-        session.commit()
-        return new_activity
-    except Exception as e:
-        session.rollback()
-        raise e
-    finally:
-        session.close()
+        user = db.query(Utilisateur).get(user_id)
+        if not user:
+            return None
 
-def get_activities_for_user(user_id):
-    """Récupère toutes les activités d'un utilisateur."""
-    session = get_session()
+        for key, value in kwargs.items():
+            setattr(user, key, value)
+
+        db.commit()
+        return user
+    finally:
+        db.close()
+
+
+def delete_user(user_id):
+    """DELETE : supprime un utilisateur en base"""
+    db = SessionLocal()
     try:
-        # On peut requêter Activite et filtrer sur la clé étrangère
-        return session.query(Activite).filter(Activite.utilisateur_id == user_id).all()
-    finally:
-        session.close()
+        user = db.query(Utilisateur).get(user_id)
+        if not user:
+            return False
 
-# ... Ajouter ici les fonctions pour Follow, Commentaire, Like, etc. ...
+        db.delete(user)
+        db.commit()
+        return True
+    finally:
+        db.close()
