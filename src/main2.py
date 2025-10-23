@@ -1,7 +1,7 @@
 
 from database import engine, SessionLocal, Base
 from business_objects.models import Utilisateur  # importe le modèle
-from objects.dao.crud import create_user, get_all_users, update_user, delete_user
+from objectdao.crud import create_user, get_all_users, update_user, delete_user
 
 def init_db():
     """Crée physiquement les tables dans la base SQLite."""
