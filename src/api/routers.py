@@ -9,6 +9,7 @@ from api.lien_dbapi import get_db
 
 activites_router = APIRouter()
 
+
 @activites_router.get("/activites")
 def get_activites():
     return {"message": "Liste des activités"}
@@ -18,8 +19,10 @@ router = APIRouter(prefix="/activites", tags=["activites"])
 UPLOAD_DIR = "uploads/gpx"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
+
 def _safe_filename(s: str) -> str:
     return "".join(c if c.isalnum() or c in ("_", "-", ".", "@") else "_" for c in s)
+
 
 @router.post("", response_model=ActiviteOut, status_code=201)
 async def create_activite_with_gpx(
