@@ -25,7 +25,7 @@ if __name__ == "__main__":
 
     # Visionnage liste des utilisateurs :
 
-    print("\n👥 Liste des utilisateurs en base :")
+    print("\n Liste des utilisateurs en base :")
 users = get_all_users()       # Appel de ta fonction CRUD
 for u in users:
     print(f"- {u.id}: {u.nom} {u.prenom} ({u.pseudo})")
@@ -38,7 +38,7 @@ for u in users:
 
     # Visionnage liste des utilisateurs :
 
-    print("\n👥 Liste des utilisateurs en base :")
+    print("\n Liste des utilisateurs en base :")
 users = get_all_users()       # Appel de ta fonction CRUD
 for u in users:
     print(f"- {u.id}: {u.nom} {u.prenom} ({u.pseudo})")
