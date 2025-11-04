@@ -1,4 +1,7 @@
-from sqlalchemy import create_engine, Column, Integer, String, Float, Date, Text, LargeBinary, ForeignKey, Table
+from sqlalchemy import (
+    create_engine, Column, Integer, String, Float,
+    Date, Text, LargeBinary, ForeignKey, Table
+)
 from sqlalchemy.orm import declarative_base, relationship
 from database import Base
 
@@ -6,22 +9,22 @@ from database import Base
 
 # Table de liaison pour les followers (Follow)
 follows = Table('Follow', Base.metadata,
-    Column('follower_id', Integer, ForeignKey('Utilisateur.id'), primary_key=True),
-    Column('followed_id', Integer, ForeignKey('Utilisateur.id'), primary_key=True)
-)
+                Column('follower_id', Integer, ForeignKey('Utilisateur.id'), primary_key=True),
+                Column('followed_id', Integer, ForeignKey('Utilisateur.id'), primary_key=True)
+                )
 
 # Table de liaison pour les Likes sur les activités
 likes = Table('Like', Base.metadata,
-    Column('utilisateur_id', Integer, ForeignKey('Utilisateur.id'), primary_key=True),
-    Column('activite_id', Integer, ForeignKey('Activite.id'), primary_key=True)
-)
+              Column('utilisateur_id', Integer, ForeignKey('Utilisateur.id'), primary_key=True),
+              Column('activite_id', Integer, ForeignKey('Activite.id'), primary_key=True)
+              )
 
 
 # --- Classes ORM Principales ---
 
 class Utilisateur(Base):
     __tablename__ = 'Utilisateur'
-    
+
     id = Column(Integer, primary_key=True)
     nom = Column(String, nullable=False)
     prenom = Column(String, nullable=False)
@@ -33,7 +36,7 @@ class Utilisateur(Base):
     mail = Column(String, unique=True, nullable=False)
     telephone = Column(Integer)
     mdp = Column(String, nullable=False)
-    
+
     # Relations ORM
     followers = relationship(
         "Utilisateur",
@@ -57,7 +60,7 @@ class Utilisateur(Base):
 
 class Activite(Base):
     __tablename__ = 'Activite'
-    
+
     id = Column(Integer, primary_key=True)
     nom = Column(String(255), nullable=False)
     type_sport = Column(String, nullable=False)
@@ -67,12 +70,14 @@ class Activite(Base):
     fichier_gpx = Column(LargeBinary)
     d_plus = Column(Integer)
     calories = Column(Integer)
-    
+
     utilisateur_id = Column(Integer, ForeignKey('Utilisateur.id'), nullable=False)
-    
+
     # Relations ORM
     utilisateur = relationship("Utilisateur", back_populates="activites")
-    commentaires = relationship("Commentaire", back_populates="activite", cascade="all, delete-orphan")
+    commentaires = relationship(
+        "Commentaire", back_populates="activite", cascade="all, delete-orphan"
+        )
     likers = relationship(
         "Utilisateur",
         secondary=likes,
@@ -85,13 +90,13 @@ class Activite(Base):
 
 class Commentaire(Base):
     __tablename__ = 'Commentaire'
-    
+
     id = Column(Integer, primary_key=True)
     contenu = Column(Text, nullable=False)
-    
+
     activite_id = Column(Integer, ForeignKey('Activite.id'), nullable=False)
     auteur_id = Column(Integer, ForeignKey('Utilisateur.id'), nullable=False)
-    
+
     # Relations ORM
     activite = relationship("Activite", back_populates="commentaires")
     auteur = relationship("Utilisateur", back_populates="commentaires")

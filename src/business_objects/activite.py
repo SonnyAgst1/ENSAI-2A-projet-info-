@@ -232,7 +232,11 @@ class Activité:
                 - Vélo: km/h
                 - Marche: min/km
         """
-        duree_minutes = self._dureeActivite.hour*60+self._dureeActivite.minute+self._dureeActivite.second/60
+        duree_minutes = (
+            self._dureeActivite.hour * 60
+            + self._dureeActivite.minute
+            + self._dureeActivite.second / 60
+        )
         if duree_minutes == 0:
             raise ValueError("La durée de l'activité doit être supérieure à 0")
         type_sport_lower = self._type_sport.lower()

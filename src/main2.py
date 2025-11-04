@@ -1,35 +1,45 @@
-
 from database import engine, SessionLocal, Base
 from business_objects.models import Utilisateur  # importe le modèle
 from objectdao.crud import create_user, get_all_users, update_user, delete_user
 
+# Permet de reinitialisé la base de donnée pour relancer le fichier main sans soucis
+Base.metadata.drop_all(bind=engine)
+Base.metadata.create_all(bind=engine)
+print("Base réinitialisée")
+
+
 def init_db():
     """Crée physiquement les tables dans la base SQLite."""
     Base.metadata.create_all(bind=engine)
-    print(" Tables créées / vérifiées.")
+    print(" Tables créées")
+
 
 if __name__ == "__main__":
     init_db()
 
-    # CREATE
-    user = create_user("Dupont", "Alice", 26, "Alicia", "alice@example.com", "secret123")
-    print(f"\n Utilisateur créé : {user.id} - {user.pseudo}")
+    # Creation d'utilisateur
+    create_user("Dupont", "Alice", 26, "Alicia", "alice@example.com", "secret123")
+    create_user("Martin", "Lucas", 30, "Lulu", "lucas.martin@example.com", "mdp123")
+    create_user("Durand", "Emma", 24, "Emmou", "emma.durand@example.com", "pass456")
+    create_user("Petit", "Nina", 28, "Ninou", "nina.petit@example.com", "azerty789")
 
-    # READ
-    print("\n👥 Liste des utilisateurs :")
-    for u in get_all_users():
-        print(f"- {u.id}: {u.nom} {u.prenom} ({u.pseudo})")
+    # Visionnage liste des utilisateurs :
 
-    # UPDATE
-    updated = update_user(user.id, nom="Durand", pseudo="Alicia06")
-    print(f"\n Utilisateur mis à jour : {updated.id} - {updated.nom} ({updated.pseudo})")
+    print("\n👥 Liste des utilisateurs en base :")
+users = get_all_users()       # Appel de ta fonction CRUD
+for u in users:
+    print(f"- {u.id}: {u.nom} {u.prenom} ({u.pseudo})")
 
-    # DELETE
-    delete_user(user.id)
-    print(f"\n Utilisateur {user.id} supprimé.")
+    # Renvoie bien la liste d'utilisateur
 
-    # READ again
-    print("\n👥 Utilisateurs restants :")
-    for u in get_all_users():
-        print(f"- {u.id}: {u.nom} {u.prenom} ({u.pseudo})")
+    # Supprime un utilisateur
 
+    delete_user(4)
+
+    # Visionnage liste des utilisateurs :
+
+    print("\n👥 Liste des utilisateurs en base :")
+users = get_all_users()       # Appel de ta fonction CRUD
+for u in users:
+    print(f"- {u.id}: {u.nom} {u.prenom} ({u.pseudo})")
+    # L'utilisateur est bien supprimé
