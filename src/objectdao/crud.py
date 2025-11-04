@@ -2,7 +2,8 @@
 from database import SessionLocal
 from business_objects.models import Utilisateur
 
-#CRUD pour utilisateur 
+
+# CRUD pour utilisateur
 def create_user(nom, prenom, age, pseudo, mail, mdp):
     """CREATE : ajoute un utilisateur en base"""
     db = SessionLocal()
@@ -31,6 +32,7 @@ def get_all_users():
     finally:
         db.close()
 
+
 def update_user(user_id, **kwargs):
     db = SessionLocal()
     try:
@@ -43,6 +45,7 @@ def update_user(user_id, **kwargs):
         return user
     finally:
         db.close()
+
 
 def delete_user(user_id: int) -> bool:
     """DELETE : supprime un utilisateur de la base à partir de son ID.
