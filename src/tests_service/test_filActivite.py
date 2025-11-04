@@ -2,10 +2,6 @@ import unittest
 from unittest.mock import patch
 from service.fil_activite import FilDActivite
 
-
-# =========================
-# Classe MOCK pour les prints
-# =========================
 class MockPrinter:
     """
     Mock très simple pour remplacer print().
