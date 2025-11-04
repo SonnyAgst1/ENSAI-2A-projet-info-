@@ -1,42 +1,45 @@
-from __init__ import init_db
-from objects.dao.crud import create_user, get_user_by_pseudo, create_activity
-from datetime import date  # Pour utiliser le type Date
+from database import engine, SessionLocal, Base
+from business_objects.models import Utilisateur  # importe le modèle
+from objectdao.crud import create_user, get_all_users, update_user, delete_user
+
+# Permet de reinitialisé la base de donnée pour relancer le fichier main sans soucis
+Base.metadata.drop_all(bind=engine)
+Base.metadata.create_all(bind=engine)
+print("Base réinitialisée")
+
+
+def init_db():
+    """Crée physiquement les tables dans la base SQLite."""
+    Base.metadata.create_all(bind=engine)
+    print(" Tables créées")
+
 
 if __name__ == "__main__":
-
-    print("--- Initialisation de l'application ---")
-
-    # 1. Assurez-vous que la base de données et les tables existent
     init_db()
 
-    # 2. Exemple d'utilisation du DAO (Couche Accès aux Données)
+    # Creation d'utilisateur
+    create_user("Dupont", "Alice", 26, "Alicia", "alice@example.com", "secret123")
+    create_user("Martin", "Lucas", 30, "Lulu", "lucas.martin@example.com", "mdp123")
+    create_user("Durand", "Emma", 24, "Emmou", "emma.durand@example.com", "pass456")
+    create_user("Petit", "Nina", 28, "Ninou", "nina.petit@example.com", "azerty789")
 
-    # Création d'un utilisateur
-    try:
-        user_a = create_user("Dupont", "Marie", "MDU", "m.dupont@mail.com", "pass123")
-        print(f"\n Utilisateur créé: {user_a.pseudo} (ID: {user_a.id})")
-    except ValueError as e:
-        print(f"\n Erreur de création utilisateur: {e}")
-        user_a = get_user_by_pseudo("MDU")  # Si l'utilisateur existe déjà, on le récupère
+    # Visionnage liste des utilisateurs :
 
-    # Création d'une activité pour cet utilisateur
-    if user_a:
-        try:
-            activity = create_activity(
-                user_id=user_a.id,
-                nom="Course 10k",
-                type_sport="Course à pied",
-                date_activite=date(2025, 10, 3),  # Utiliser le type 'date' de Python
-                duree_activite=3600  # en secondes
-            )
-            print(f" Activité créée: '{activity.nom}' par {user_a.pseudo}")
+    print("\n Liste des utilisateurs en base :")
+users = get_all_users()       # Appel de ta fonction CRUD
+for u in users:
+    print(f"- {u.id}: {u.nom} {u.prenom} ({u.pseudo})")
 
-            # Récupération et vérification
-            activities = get_activities_for_user(user_a.id)
-            print(f"Total activités de {user_a.pseudo}: {len(activities)}")
+    # Renvoie bien la liste d'utilisateur
 
-        except Exception as e:
-            print(f"Erreur lors de la création d'activité: {e}")
+    # Supprime un utilisateur
 
-    # 3. Le reste de la logique de l'application se déploie ici...
-    print("\n--- Fin de l'application ---")
+    delete_user(4)
+
+    # Visionnage liste des utilisateurs :
+
+    print("\n Liste des utilisateurs en base :")
+users = get_all_users()       # Appel de ta fonction CRUD
+for u in users:
+    print(f"- {u.id}: {u.nom} {u.prenom} ({u.pseudo})")
+    # L'utilisateur est bien supprimé
