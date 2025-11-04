@@ -9,7 +9,7 @@ class MockActivite:
     def __init__(self, id_activite, nom, distance=10, duree=60, calories=500, d_plus=100):
         self.id_activite = id_activite
         self.nom = nom
-        self.d_plus = distance  # Distance en km
+        self.d_plus = d_plus  # Distance en km
         self.duree_activite = duree  # Durée en minutes
         self.calories = calories
         self._likes = []
@@ -71,12 +71,12 @@ class TestUtilisateur:
     """Classe de tests pour la classe Utilisateur"""
 
     @pytest.fixture
-    def date_naissance(self):
+    def date_naissance():
         """Fixture pour une date de naissance"""
         return date(1990, 5, 15)
 
     @pytest.fixture
-    def utilisateur_base(self, date_naissance):
+    def utilisateur_base(date_naissance):
         """Fixture pour créer un utilisateur de test"""
         return Utilisateur(
             id_utilisateur=1,
