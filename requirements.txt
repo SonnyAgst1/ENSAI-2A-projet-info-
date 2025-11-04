@@ -1,3 +1,4 @@
 pytest
 fastapi
 sqlalchemy
+matplotlib seaborn plotly
