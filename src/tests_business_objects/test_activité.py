@@ -387,7 +387,9 @@ class TestActivité:
         assert activite_base.getNombreLike() == activite_base.compte_like()
         assert activite_base.getNombreLike() == 3
 
-    def test_getNombreCommentaire_coherent_avec_compte_commentaire(self, activite_base, commentaire1):
+    def test_getNombreCommentaire_coherent_avec_compte_commentaire(
+        self, activite_base, commentaire1
+    ):
         """Test que getNombreCommentaire retourne la même valeur que compte_commentaire"""
         activite_base._commentaire = [commentaire1]
         assert activite_base.getNombreCommentaire() == activite_base.compte_commentaire()
@@ -588,7 +590,9 @@ class TestActivitéParamétré:
         ("Marche", dt.time(1, 0, 0), 5, 12.0),         # 60 min / 5 km = 12 min/km
         ("marche", dt.time(1, 30, 0), 9, 10.0),        # 90 min / 9 km = 10 min/km
     ])
-    def test_calculer_vitesse_differents_sports(self, type_sport, duree, distance, vitesse_attendue):
+    def test_calculer_vitesse_differents_sports(
+        self, type_sport, duree, distance, vitesse_attendue
+    ):
         """Test calcul vitesse pour différents sports et configurations"""
         utilisateur = MockUtilisateur(1, "Test")
         activite = Activité(
