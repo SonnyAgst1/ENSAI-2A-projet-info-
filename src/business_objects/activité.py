@@ -1,5 +1,6 @@
 import datetime as dt
 import gpxpy
+from typing import List
 
 from utilisateur import Utilisateur
 from commentaire import Commentaire
@@ -20,8 +21,8 @@ class Activité:
         dureeActivite: dt.time,
         description: str,
         fichiergpx: str,
-        like: list(Utilisateur._id_utilisateur),
-        commentaire: list(Commentaire),
+        like: list,
+        commentaire: list,
         denivelle: int,
         calories: int
     ):
@@ -168,7 +169,7 @@ class Activité:
     @denivelle.setter
     def denivelle(self, nouveau_denivelle):
         """Modifie le denivellé"""
-        if isinstance(nouveau_denivelle, int) and nouveau_denivelle.strip():
+        if isinstance(nouveau_denivelle, int) and nouveau_denivelle >= 0:
             self._denivelle = nouveau_denivelle
         else:
             raise ValueError("Le denivellé doit être un entier")
@@ -243,6 +244,7 @@ class Activité:
         elif type_sport_lower == "marche":
             return duree_minutes/distance
 
+    @staticmethod
     def calculer_calories(type_sport: str, duree_heures: float, denivelle: int) -> int:
         """
         Calcule approximativement les calories dépensées
@@ -274,6 +276,7 @@ class Activité:
 
         return int(calories_totales)
 
+    @classmethod
     def creerActivite(
         cls,
         fichier_gpx: str,
@@ -343,7 +346,7 @@ class Activité:
 
         # Calculer les calories
         duree_heures = duree_totale.seconds / 3600 if points[0].time and points[-1].time else 0
-        calories = cls._calculer_calories(type_sport, duree_heures, denivelle)
+        calories = cls.calculer_calories(type_sport, duree_heures, denivelle)
 
         # Créer l'activité avec cls au lieu de Activité
         return cls(
