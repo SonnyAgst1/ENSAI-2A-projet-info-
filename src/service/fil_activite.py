@@ -21,20 +21,14 @@ class FilDActivite:
         """
         self.activites = []
 
-    
-    
     def rafraichirFil(self):
         """
         Rafraîchit le fil d'activité.
-        
+
         """
         print("Le fil d'activité a été rafraîchi.")
         print(f"Il contient actuellement {len(self.activites)} activité(s).")
 
-    
-    
-    
-    
     def ajouterActivite(self, activite):
         """
         Ajoute une nouvelle activité au fil.
@@ -53,9 +47,6 @@ class FilDActivite:
         print(f"Activité ajoutée : {activite}")
 
 
-
-
-
 # EXEMPLE D'UTILISATION
 fil = FilDActivite()
 
@@ -65,5 +56,3 @@ fil.ajouterActivite("Sortie vélo - 20 km")
 
 # Rafraîchir le fil
 fil.rafraichirFil()
-
-
