@@ -1,6 +1,6 @@
 import pytest
 import datetime as dt
-from activité import Activité
+from business_objects.activite import Activité
 
 
 # Classes mock pour les tests

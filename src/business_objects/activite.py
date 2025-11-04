@@ -2,8 +2,8 @@ import datetime as dt
 import gpxpy
 from typing import List
 
-from utilisateur import Utilisateur
-from commentaire import Commentaire
+from business_objects.utilisateur import Utilisateur
+from business_objects.commentaire import Commentaire
 
 
 class Activité:

@@ -17,7 +17,7 @@ class Utilisateur:
         mail,
         telephone,
         mdp,
-        liste_activites
+        liste_activites = None 
     ):
         """ Initialise un utilisateur
 

@@ -1,6 +1,6 @@
 import pytest
 from datetime import date, timedelta
-from utilisateur import Utilisateur
+from business_objects.utilisateur import Utilisateur
 
 
 # Classes mock pour les tests

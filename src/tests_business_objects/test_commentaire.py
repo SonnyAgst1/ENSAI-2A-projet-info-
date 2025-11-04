@@ -1,5 +1,5 @@
 import pytest
-from commentaire import Commentaire
+from business_objects.commentaire import Commentaire
 
 
 # Classes mock pour les tests
