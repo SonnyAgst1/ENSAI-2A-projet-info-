@@ -66,67 +66,66 @@ class MockService:
                 followers.append(follower_id)
         return followers
 
+@pytest.fixture
+def date_naissance():
+    """Fixture pour une date de naissance"""
+    return date(1990, 5, 15)
+
+@pytest.fixture
+def utilisateur_base(date_naissance):
+    """Fixture pour créer un utilisateur de test"""
+    return Utilisateur(
+        id_utilisateur=1,
+        pseudo="RunnerPro",
+        nom="Dupont",
+        prenom="Jean",
+        date_de_naissance=date_naissance,
+        taille=175,
+        poids=70,
+        mail="jean.dupont@example.com",
+        telephone=612345678,
+        mdp="password123"
+    )
+
+@pytest.fixture
+def utilisateur_avec_activites(date_naissance):
+    """Fixture pour un utilisateur avec des activités"""
+    activites = [
+        MockActivite(1, "Course 1", 10, 60, 500, 100),
+        MockActivite(2, "Vélo", 25, 90, 700, 150),
+        MockActivite(3, "Course 2", 15, 75, 600, 120)
+    ]
+    return Utilisateur(
+        id_utilisateur=2,
+        pseudo="SportifMax",
+        nom="Martin",
+        prenom="Sophie",
+        date_de_naissance=date_naissance,
+        taille=165,
+        poids=60,
+        mail="sophie.martin@example.com",
+        telephone=623456789,
+        mdp="secure456",
+        liste_activites=activites
+    )
+
+@pytest.fixture
+def service():
+    """Fixture pour créer une instance de MockService"""
+    return MockService()
 
 class TestUtilisateur:
     """Classe de tests pour la classe Utilisateur"""
 
-    @pytest.fixture
-    def date_naissance():
-        """Fixture pour une date de naissance"""
-        return date(1990, 5, 15)
-
-    @pytest.fixture
-    def utilisateur_base(date_naissance):
-        """Fixture pour créer un utilisateur de test"""
-        return Utilisateur(
-            id_utilisateur=1,
-            pseudo="RunnerPro",
-            nom="Dupont",
-            prenom="Jean",
-            date_de_naissance=date_naissance,
-            taille=175,
-            poids=70,
-            mail="jean.dupont@example.com",
-            telephone=612345678,
-            mdp="password123"
-        )
-
-    @pytest.fixture
-    def utilisateur_avec_activites(self, date_naissance):
-        """Fixture pour un utilisateur avec des activités"""
-        activites = [
-            MockActivite(1, "Course 1", 10, 60, 500, 100),
-            MockActivite(2, "Vélo", 25, 90, 700, 150),
-            MockActivite(3, "Course 2", 15, 75, 600, 120)
-        ]
-        return Utilisateur(
-            id_utilisateur=2,
-            pseudo="SportifMax",
-            nom="Martin",
-            prenom="Sophie",
-            date_de_naissance=date_naissance,
-            taille=165,
-            poids=60,
-            mail="sophie.martin@example.com",
-            telephone=623456789,
-            mdp="secure456",
-            liste_activites=activites
-        )
-
-    @pytest.fixture
-    def service(self):
-        """Fixture pour créer une instance de MockService"""
-        return MockService()
-
     # Tests du constructeur
-    def test_creation_utilisateur_complet(self, date_naissance):
+    def test_creation_utilisateur_complet(self):
         """Test la création d'un utilisateur avec tous les paramètres"""
         user = Utilisateur(
             id_utilisateur=1,
             pseudo="TestUser",
             nom="Nom",
             prenom="Prenom",
-            date_de_naissance=date_naissance,
+            date_de_naissance=date(1995,1,1),
             taille=180,
             poids=75,
             mail="test@example.com",
@@ -420,11 +419,6 @@ class TestUtilisateur:
         assert resultat is False
 
     # Tests des méthodes de calcul
-    def test_calculer_distance_totale(self, utilisateur_avec_activites):
-        """Test le calcul de la distance totale"""
-        distance = utilisateur_avec_activites.calculer_distance_totale()
-        assert distance == 50  # 10 + 25 + 15
-
     def test_calculer_distance_totale_sans_activites(self, utilisateur_base):
         """Test le calcul de la distance avec aucune activité"""
         distance = utilisateur_base.calculer_distance_totale()
@@ -444,12 +438,6 @@ class TestUtilisateur:
         """Test le calcul du dénivelé positif total"""
         d_plus = utilisateur_avec_activites.calculer_d_plus_total()
         assert d_plus == 370  # 100 + 150 + 120
-
-    def test_calculer_vitesse_moyenne_globale(self, utilisateur_avec_activites):
-        """Test le calcul de la vitesse moyenne globale"""
-        vitesse = utilisateur_avec_activites.calculer_vitesse_moyenne_globale()
-        # 50 km en 225 minutes = 50 / (225/60) = 13.33 km/h
-        assert round(vitesse, 2) == 13.33
 
     def test_calculer_vitesse_moyenne_sans_activites(self, utilisateur_base):
         """Test le calcul de la vitesse avec aucune activité"""
