@@ -3,8 +3,8 @@ Tests pour la partie commentaires du ActiviteService
 """
 import pytest
 from datetime import date
-from services.activite_service import ActiviteService
-from services.utilisateur_service import UtilisateurService
+from service.activite_service import ActiviteService
+from service.utilisateur_service import UtilisateurService
 from database import SessionLocal, Base, engine
 
 
