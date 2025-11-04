@@ -1,12 +1,18 @@
-# api/routers/activites.py
 import os
 from datetime import date
 from typing import Optional
 from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException
 from sqlalchemy.orm import Session
 from business_objects.models import Activite
-from api.schemas import ActiviteOut
-from api.deps import get_db
+from api.entree import ActiviteOut
+from api.lien_dbapi import get_db
+
+activites_router = APIRouter()
+
+@activites_router.get("/activites")
+def get_activites():
+    return {"message": "Liste des activités"}
+
 
 router = APIRouter(prefix="/activites", tags=["activites"])
 UPLOAD_DIR = "uploads/gpx"
