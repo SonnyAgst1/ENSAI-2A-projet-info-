@@ -66,10 +66,12 @@ class MockService:
                 followers.append(follower_id)
         return followers
 
+
 @pytest.fixture
 def date_naissance():
     """Fixture pour une date de naissance"""
     return date(1990, 5, 15)
+
 
 @pytest.fixture
 def utilisateur_base(date_naissance):
@@ -86,6 +88,7 @@ def utilisateur_base(date_naissance):
         telephone=612345678,
         mdp="password123"
     )
+
 
 @pytest.fixture
 def utilisateur_avec_activites(date_naissance):
@@ -109,10 +112,12 @@ def utilisateur_avec_activites(date_naissance):
         liste_activites=activites
     )
 
+
 @pytest.fixture
 def service():
     """Fixture pour créer une instance de MockService"""
     return MockService()
+
 
 class TestUtilisateur:
     """Classe de tests pour la classe Utilisateur"""
@@ -125,7 +130,7 @@ class TestUtilisateur:
             pseudo="TestUser",
             nom="Nom",
             prenom="Prenom",
-            date_de_naissance=date(1995,1,1),
+            date_de_naissance=date(1995, 1, 1),
             taille=180,
             poids=75,
             mail="test@example.com",
