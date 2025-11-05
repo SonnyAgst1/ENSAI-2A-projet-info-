@@ -67,7 +67,8 @@ class Activite(Base):
     date_activite = Column(Date, nullable=False)
     duree_activite = Column(Integer)
     description = Column(Text)
-    gpx_path = Column(String(512), nullable=True)
+    fichier_gpx = Column(LargeBinary, nullable=True)  # Stocker le contenu
+    gpx_path = Column(String(512), nullable=True)      # Stocker le chemin
     d_plus = Column(Integer)
     calories = Column(Integer)
 
