@@ -5,3 +5,11 @@ matplotlib seaborn plotly
 InquirerPy
 gpxpy
 bcrypt
+uvicorn
+matplotlib
+seaborn
+plotly
+InquirerPy
+gpxpy
+bcrypt
+python-multipart

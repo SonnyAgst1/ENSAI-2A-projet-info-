@@ -21,9 +21,10 @@ class ActiviteDAO:
         nom: str,
         type_sport: str,
         date_activite: date,
-        duree_activite: int,
+        duree_activite: int,  # En SECONDES (déjà correct)
         description: str = "",
-        fichier_gpx: Optional[bytes] = None,
+        gpx_path: Optional[str] = None,  # AJOUTER ce paramètre
+        fichier_gpx: Optional[bytes] = None,  # Garder celui-ci
         d_plus: int = 0,
         calories: int = 0
     ) -> Optional[Activite]:
