@@ -17,3 +17,4 @@ class ActiviteOut(BaseModel):
     gpx_path: Optional[str] = None
 
     model_config = dict(from_attributes=True)  # Pydantic v2
+

@@ -1,7 +1,6 @@
 pytest
 fastapi
 sqlalchemy
-matplotlib seaborn plotly
 InquirerPy
 gpxpy
 bcrypt
