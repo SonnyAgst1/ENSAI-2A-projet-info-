@@ -44,16 +44,16 @@ async def create_activite_with_gpx(
         # 1) Validations basiques
         if not gpx.filename.lower().endswith(".gpx"):
             raise HTTPException(status_code=400, detail="Le fichier doit être un .gpx")
-        
+
         # 2) Nom de fichier unique & sûr
         fname = _safe_filename(f"{utilisateur_id}_{date_activite}_{gpx.filename}")
         fullpath = os.path.join(UPLOAD_DIR, fname)
-        
+
         # 3) Sauvegarde du fichier sur le disque
         content = await gpx.read()
         with open(fullpath, "wb") as f:
             f.write(content)
-        
+
         # 4) Stocker le chemin relatif (pas le chemin absolu complet)
         gpx_path = fullpath  # ou juste fname si vous préférez relatif
 
