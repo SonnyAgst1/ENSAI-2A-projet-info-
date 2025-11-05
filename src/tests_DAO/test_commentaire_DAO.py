@@ -14,12 +14,14 @@ from dao.utilisateur_dao import UtilisateurDAO
 from dao.activite_dao import ActiviteDAO
 from database import Base, engine
 
+
 @pytest.fixture(scope="function")
 def setup_database():
     """Crée les tables avant chaque test et les supprime après"""
     Base.metadata.create_all(bind=engine)
     yield
     Base.metadata.drop_all(bind=engine)
+
 
 @pytest.fixture
 def utilisateur_test(setup_database):
@@ -33,6 +35,7 @@ def utilisateur_test(setup_database):
         mdp="password123"
     )
 
+
 @pytest.fixture
 def activite_test(setup_database, utilisateur_test):
     """Crée et retourne une activité de test liée à l'utilisateur"""
@@ -43,6 +46,7 @@ def activite_test(setup_database, utilisateur_test):
         date_activite=date.today(),
         duree_activite=3600
     )
+
 
 class TestCommentaireDAO:
     """Tests pour le DAO Commentaire"""
