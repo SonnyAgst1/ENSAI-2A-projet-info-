@@ -56,9 +56,7 @@ class InscriptionVue(VueAbstraite):
 
         age = inquirer.number(
             message="Âge :",
-            min_allowed=13,
-            max_allowed=120,
-            validate=lambda x: 13 <= x <= 120 or "L'âge doit être entre 13 et 120 ans"
+            default=None,
         ).execute()
 
         mail = inquirer.text(
