@@ -7,7 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from database import SessionLocal
-from business_objects.models import Utilisateur, follows
+from business_objects.models import 
 
 
 class UtilisateurDAO:

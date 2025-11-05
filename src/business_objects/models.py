@@ -62,15 +62,14 @@ class Activite(Base):
     __tablename__ = 'Activite'
 
     id = Column(Integer, primary_key=True)
-    nom = Column(String(255), nullable=False)
-    type_sport = Column(String, nullable=False)
-    date_activite = Column(Date, nullable=False)
+    nom = Column(String(255))
+    type_sport = Column(String, nullable=False, default="unknow")
+    date_activite = Column(Date, nullable=False, default="unknow")
     duree_activite = Column(Integer)
-    description = Column(Text)
-    fichier_gpx = Column(LargeBinary, nullable=True)  # Stocker le contenu
-    gpx_path = Column(String(512), nullable=True)      # Stocker le chemin
-    d_plus = Column(Integer)
-    calories = Column(Integer)
+    description = Column(Text, nullable=True)
+    gpx_path = Column(String(512))
+    d_plus = Column(Integer, nullable=True)
+    calories = Column(Integer, nullable=True)
 
     utilisateur_id = Column(Integer, ForeignKey('Utilisateur.id'), nullable=False)
 
