@@ -9,7 +9,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 
 from database import Base, engine
 from view.accueil_vue import AccueilVue
-
+import business_objects.models
 
 def initialiser_base_donnees():
     """Initialise la base de données si elle n'existe pas"""
