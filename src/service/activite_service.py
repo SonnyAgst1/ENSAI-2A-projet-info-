@@ -83,8 +83,7 @@ class ActiviteService:
         calories = ActiviteService._calculer_calories(type_sport, duree_heures, d_plus)
         
         # Lire le contenu du fichier GPX en bytes pour le stocker
-        with open(fichier_gpx, 'rb') as f:
-            fichier_gpx_bytes = f.read()
+        gpx_path = fichier_gpx
         
         # Créer l'activité en base
         db = SessionLocal()
@@ -95,7 +94,7 @@ class ActiviteService:
                 date_activite=date_activite,
                 duree_activite=duree_secondes,
                 description=description,
-                fichier_gpx=fichier_gpx_bytes,
+                gpx_path=gpx_path,
                 d_plus=d_plus,
                 calories=calories,
                 utilisateur_id=utilisateur_id
