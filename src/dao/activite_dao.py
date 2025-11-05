@@ -1,5 +1,5 @@
 """
-DAO (Data Access Object) pour la table Activite
+DAO pour la table Activite
 Gère toutes les opérations de base de données pour les activités
 """
 from typing import Optional, List
