@@ -32,7 +32,7 @@ class AccueilVue(VueAbstraite):
             print("=" * 50)
 
         print("\n" + "-" * 50)
-        print("🏃 BIENVENUE - APPLICATION SPORTIVE")
+        print(" BIENVENUE sur DATATHLON")
         print("-" * 50 + "\n")
 
         # Vérifier si un utilisateur est connecté
@@ -62,7 +62,7 @@ class AccueilVue(VueAbstraite):
         # Gestion des choix
         match choix:
             case "Quitter":
-                print("\n👋 Au revoir !\n")
+                print("\n Au revoir !\n")
                 return None
 
             case "Se connecter":
@@ -75,7 +75,7 @@ class AccueilVue(VueAbstraite):
 
             case "Se déconnecter":
                 Session().deconnexion()
-                return AccueilVue("✅ Déconnexion réussie")
+                return AccueilVue(" Déconnexion réussie")
 
             case "Voir mon profil":
                 from view.profil_vue import ProfilVue
