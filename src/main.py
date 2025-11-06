@@ -31,5 +31,3 @@ for u in users:
     print(f"- {u.id}: {u.nom} {u.prenom} ({u.pseudo})")
 
     # Renvoie bien la liste d'utilisateur
-
-
