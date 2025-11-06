@@ -6,12 +6,14 @@ from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.exceptions import RequestValidationError
-from database import Base, engine
+from database import Base, engine # Imports essentiels pour l'initialisation de la DB
+from business_objects import models # IMPÉRATIF: Importe les modèles pour que Base.metadata les connaisse
+from dao.utilisateur_dao import UtilisateurDAO
+from dao.activite_dao import ActiviteDAO
 
-# Créer les tables
-Base.metadata.create_all(bind=engine)
-
-# Créer l'application
+# =================================================================
+# 1. CRÉATION DE L'APPLICATION (DOIT ÊTRE FAIT AVANT d'utiliser 'app')
+# =================================================================
 app = FastAPI(
     title="Application Sportive API",
     description="""
@@ -129,6 +131,31 @@ app = FastAPI(
         "name": "MIT"
     }
 )
+# Importer les routers
+from api.utilisateur_router import router as utilisateur_router
+from api.activite_router import router as activite_router
+from api.fil_router import router as fil_router
+from api.interaction_router import router as interaction_router
+from api.statistiques_router import router as statistiques_router
+# =================================================================
+# 2. LOGIQUE D'INITIALISATION DE LA BASE (Résout l'erreur SQLAlchemy)
+# =================================================================
+@app.on_event("startup")
+def init_db_on_startup():
+    """
+    S'assure que les tables de la base de données sont créées
+    une seule fois au démarrage du processus principal du serveur.
+    Ceci résout l'erreur 'Multiple classes found' en mode --reload.
+    """
+    print("\n\n" + "="*60)
+    print("🚀 Événement STARTUP : Initialisation de la Base de Données")
+    print("="*60)
+    
+    # Créer les tables si elles n'existent pas
+    Base.metadata.create_all(bind=engine) 
+    
+    print("✅ Création des tables terminée (si elles n'existaient pas).\n")
+
 
 # Configuration CORS
 app.add_middleware(
@@ -139,12 +166,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Importer les routers
-from api.utilisateur_router import router as utilisateur_router
-from api.activite_router import router as activite_router
-from api.fil_router import router as fil_router
-from api.interaction_router import router as interaction_router
-from api.statistiques_router import router as statistiques_router
 
 # Enregistrer les routers
 app.include_router(utilisateur_router, prefix="/api")
@@ -166,11 +187,6 @@ def redirect_docs():
 def api_info():
     """
     Informations générales sur l'API
-    
-    Retourne :
-    - Version de l'API
-    - Liste des endpoints disponibles
-    - Résumé des fonctionnalités
     """
     return {
         "nom": "Application Sportive API",
@@ -229,8 +245,6 @@ def api_info():
 def health_check():
     """
     Vérification de santé de l'API
-    
-    Utilisé pour le monitoring et les checks de disponibilité.
     """
     return {
         "status": "healthy",
@@ -243,12 +257,7 @@ def health_check():
 def stats_globales():
     """
     Statistiques globales de l'application
-    
-    Retourne le nombre total d'utilisateurs, d'activités, etc.
     """
-    from dao.utilisateur_dao import UtilisateurDAO
-    from dao.activite_dao import ActiviteDAO
-    
     return {
         "utilisateurs": {
             "total": UtilisateurDAO.count_all()
@@ -265,8 +274,6 @@ def stats_globales():
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     """
     Gestionnaire d'erreurs de validation personnalisé
-    
-    Retourne des messages d'erreur plus clairs pour les problèmes de validation
     """
     errors = []
     for error in exc.errors():
@@ -319,7 +326,6 @@ if __name__ == "__main__":
     import os
     
     # Configuration pour Onyxia
-    # Par défaut port 9000 (standard Onyxia)
     port = int(os.getenv("PORT", 9000))
     host = os.getenv("HOST", "0.0.0.0")
     
@@ -328,10 +334,10 @@ if __name__ == "__main__":
     print("="*60)
     print(f"\n🌐 Serveur : {host}:{port}")
     print("\n📚 Documentation disponible sur :")
-    print(f"   → http://localhost:{port}/docs (Swagger UI)")
-    print(f"   → http://localhost:{port}/redoc (ReDoc)")
+    print(f"   → http://localhost:{port}/docs (Swagger UI)")
+    print(f"   → http://localhost:{port}/redoc (ReDoc)")
     print("\n💡 Sur Onyxia, utilisez l'URL publique fournie par le service")
-    print("   Format habituel : https://user-xxxxx.lab.sspcloud.fr/docs")
+    print("   Format habituel : https://user-xxxxx.lab.sspcloud.fr/docs")
     print("\n🚀 Démarrage du serveur...")
     print("="*60 + "\n")
     

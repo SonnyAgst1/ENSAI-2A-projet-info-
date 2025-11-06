@@ -4,6 +4,7 @@ Router pour les utilisateurs
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
+import traceback
 
 from api.schemas import (
     UtilisateurCreate, UtilisateurLogin, UtilisateurOut, 
@@ -27,40 +28,53 @@ def creer_utilisateur(user_data: UtilisateurCreate, db: Session = Depends(get_db
     - **mail**: Email unique
     - **mdp**: Mot de passe
     """
-    # Vérifier si le pseudo existe
-    if UtilisateurService.obtenir_utilisateur_par_pseudo(user_data.pseudo):
-        raise HTTPException(
-            status_code=400,
-            detail="Ce pseudo est déjà utilisé"
+    try:
+        # Vérifier si le pseudo existe
+        if UtilisateurService.obtenir_utilisateur_par_pseudo(user_data.pseudo):
+            raise HTTPException(
+                status_code=400,
+                detail="Ce pseudo est déjà utilisé"
+            )
+        
+        # Vérifier si l'email existe
+        if UtilisateurService.obtenir_utilisateur_par_email(user_data.mail):
+            raise HTTPException(
+                status_code=400,
+                detail="Cet email est déjà utilisé"
+            )
+        
+        # Créer l'utilisateur
+        utilisateur = UtilisateurService.creer_utilisateur(
+            nom=user_data.nom,
+            prenom=user_data.prenom,
+            age=user_data.age,
+            pseudo=user_data.pseudo,
+            mail=user_data.mail,
+            mdp=user_data.mdp,
+            taille=user_data.taille,
+            poids=user_data.poids,
+            telephone=user_data.telephone
         )
+        
+        if not utilisateur:
+            raise HTTPException(
+                status_code=500,
+                detail="Erreur lors de la création du compte"
+            )
+        
+        return utilisateur
     
-    # Vérifier si l'email existe
-    if UtilisateurService.obtenir_utilisateur_par_email(user_data.mail):
-        raise HTTPException(
-            status_code=400,
-            detail="Cet email est déjà utilisé"
-        )
-    
-    # Créer l'utilisateur
-    utilisateur = UtilisateurService.creer_utilisateur(
-        nom=user_data.nom,
-        prenom=user_data.prenom,
-        age=user_data.age,
-        pseudo=user_data.pseudo,
-        mail=user_data.mail,
-        mdp=user_data.mdp,
-        taille=user_data.taille,
-        poids=user_data.poids,
-        telephone=user_data.telephone
-    )
-    
-    if not utilisateur:
+    except HTTPException:
+        # Re-lever les HTTPException
+        raise
+    except Exception as e:
+        # Logger l'erreur complète pour déboguer
+        print(f"Erreur inattendue lors de l'inscription: {e}")
+        print(traceback.format_exc())
         raise HTTPException(
             status_code=500,
-            detail="Erreur lors de la création du compte"
+            detail=f"Erreur interne: {str(e)}"
         )
-    
-    return utilisateur
 
 
 @router.post("/connexion", response_model=UtilisateurOut)

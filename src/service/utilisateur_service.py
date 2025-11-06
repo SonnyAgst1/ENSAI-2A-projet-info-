@@ -1,6 +1,7 @@
 from typing import Optional, List
 from datetime import date, datetime
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import select # Ajout pour l'API moderne
 from database import SessionLocal
 from business_objects.models import Utilisateur, Activite, Commentaire, follows
 
@@ -21,48 +22,17 @@ class UtilisateurService:
         telephone: Optional[int] = None,
         photo_profil: Optional[bytes] = None
     ) -> Optional[Utilisateur]:
-        """
-        Crée un nouveau utilisateur
-
-        Args:
-            nom: Nom de l'utilisateur
-            prenom: Prénom de l'utilisateur
-            age: Âge de l'utilisateur
-            pseudo: Pseudo unique
-            mail: Email unique
-            mdp: Mot de passe (devrait être hashé en production)
-            taille: Taille en cm (optionnel)
-            poids: Poids en kg (optionnel)
-            telephone: Numéro de téléphone (optionnel)
-            photo_profil: Photo de profil en bytes (optionnel)
-
-        Returns:
-            L'utilisateur créé ou None en cas d'erreur
-        """
+        # ... (Logique de création)
         db = SessionLocal()
         try:
-            # TODO: En production, hasher le mot de passe avec bcrypt
-            # from bcrypt import hashpw, gensalt
-            # mdp_hash = hashpw(mdp.encode('utf-8'), gensalt())
-
             utilisateur = Utilisateur(
-                nom=nom,
-                prenom=prenom,
-                age=age,
-                pseudo=pseudo,
-                mail=mail,
-                mdp=mdp,  # En prod: mdp_hash
-                taille=taille,
-                poids=poids,
-                telephone=telephone,
-                photo_profil=photo_profil
+                nom=nom, prenom=prenom, age=age, pseudo=pseudo, mail=mail, mdp=mdp,
+                taille=taille, poids=poids, telephone=telephone, photo_profil=photo_profil
             )
-
             db.add(utilisateur)
             db.commit()
             db.refresh(utilisateur)
             return utilisateur
-
         except IntegrityError as e:
             db.rollback()
             print(f"Erreur : pseudo ou email déjà existant - {e}")
@@ -79,7 +49,8 @@ class UtilisateurService:
         """Récupère un utilisateur par son ID"""
         db = SessionLocal()
         try:
-            return db.query(Utilisateur).filter(Utilisateur.id == user_id).first()
+            statement = select(Utilisateur).where(Utilisateur.id == user_id)
+            return db.execute(statement).scalars().first()
         finally:
             db.close()
 
@@ -88,7 +59,8 @@ class UtilisateurService:
         """Récupère un utilisateur par son pseudo"""
         db = SessionLocal()
         try:
-            return db.query(Utilisateur).filter(Utilisateur.pseudo == pseudo).first()
+            statement = select(Utilisateur).where(Utilisateur.pseudo == pseudo)
+            return db.execute(statement).scalars().first()
         finally:
             db.close()
 
@@ -97,7 +69,8 @@ class UtilisateurService:
         """Récupère un utilisateur par son email"""
         db = SessionLocal()
         try:
-            return db.query(Utilisateur).filter(Utilisateur.mail == email).first()
+            statement = select(Utilisateur).where(Utilisateur.mail == email)
+            return db.execute(statement).scalars().first()
         finally:
             db.close()
 
@@ -106,33 +79,22 @@ class UtilisateurService:
         """Récupère tous les utilisateurs"""
         db = SessionLocal()
         try:
-            return db.query(Utilisateur).all()
+            statement = select(Utilisateur)
+            return db.execute(statement).scalars().all()
         finally:
             db.close()
 
     @staticmethod
-    def modifier_utilisateur(
-        user_id: int,
-        **kwargs
-    ) -> Optional[Utilisateur]:
-        """
-        Modifie les informations d'un utilisateur
-
-        Args:
-            user_id: ID de l'utilisateur
-            **kwargs: Champs à modifier (nom, prenom, age, taille, poids, etc.)
-
-        Returns:
-            L'utilisateur modifié ou None si non trouvé
-        """
+    def modifier_utilisateur(user_id: int, **kwargs) -> Optional[Utilisateur]:
+        """Modifie les informations d'un utilisateur"""
         db = SessionLocal()
         try:
-            utilisateur = db.query(Utilisateur).filter(Utilisateur.id == user_id).first()
+            statement = select(Utilisateur).where(Utilisateur.id == user_id)
+            utilisateur = db.execute(statement).scalars().first()
 
             if not utilisateur:
                 return None
 
-            # Mise à jour des champs fournis
             for key, value in kwargs.items():
                 if hasattr(utilisateur, key):
                     setattr(utilisateur, key, value)
@@ -154,18 +116,11 @@ class UtilisateurService:
 
     @staticmethod
     def supprimer_utilisateur(user_id: int) -> bool:
-        """
-        Supprime un utilisateur
-
-        Args:
-            user_id: ID de l'utilisateur à supprimer
-
-        Returns:
-            True si supprimé, False sinon
-        """
+        """Supprime un utilisateur"""
         db = SessionLocal()
         try:
-            utilisateur = db.query(Utilisateur).filter(Utilisateur.id == user_id).first()
+            statement = select(Utilisateur).where(Utilisateur.id == user_id)
+            utilisateur = db.execute(statement).scalars().first()
 
             if not utilisateur:
                 return False
@@ -183,35 +138,19 @@ class UtilisateurService:
 
     @staticmethod
     def connexion(pseudo: str, mdp: str) -> Optional[Utilisateur]:
-        """
-        Authentifie un utilisateur
-
-        Args:
-            pseudo: Pseudo de l'utilisateur
-            mdp: Mot de passe
-
-        Returns:
-            L'utilisateur si authentifié, None sinon
-        """
+        """Authentifie un utilisateur"""
         db = SessionLocal()
         try:
-            utilisateur = db.query(Utilisateur).filter(
-                Utilisateur.pseudo == pseudo
-            ).first()
+            statement = select(Utilisateur).where(Utilisateur.pseudo == pseudo)
+            utilisateur = db.execute(statement).scalars().first()
 
             if not utilisateur:
                 return None
-
-            # TODO: En production, vérifier avec bcrypt
-            # from bcrypt import checkpw
-            # if checkpw(mdp.encode('utf-8'), utilisateur.mdp):
-            #     return utilisateur
 
             if utilisateur.mdp == mdp:
                 return utilisateur
 
             return None
-
         finally:
             db.close()
 
@@ -219,30 +158,23 @@ class UtilisateurService:
 
     @staticmethod
     def suivre_utilisateur(follower_id: int, followed_id: int) -> bool:
-        """
-        Fait suivre un utilisateur par un autre
-
-        Args:
-            follower_id: ID de l'utilisateur qui suit
-            followed_id: ID de l'utilisateur suivi
-
-        Returns:
-            True si le follow est créé, False sinon
-        """
+        """Fait suivre un utilisateur par un autre"""
         if follower_id == followed_id:
             print("Un utilisateur ne peut pas se suivre lui-même")
             return False
 
         db = SessionLocal()
         try:
-            follower = db.query(Utilisateur).filter(Utilisateur.id == follower_id).first()
-            followed = db.query(Utilisateur).filter(Utilisateur.id == followed_id).first()
+            follower_stmt = select(Utilisateur).where(Utilisateur.id == follower_id)
+            followed_stmt = select(Utilisateur).where(Utilisateur.id == followed_id)
+
+            follower = db.execute(follower_stmt).scalars().first()
+            followed = db.execute(followed_stmt).scalars().first()
 
             if not follower or not followed:
                 print("Utilisateur non trouvé")
                 return False
 
-            # Vérifier si le follow existe déjà
             existing = db.execute(
                 follows.select().where(
                     follows.c.follower_id == follower_id,
@@ -254,7 +186,6 @@ class UtilisateurService:
                 print("Le follow existe déjà")
                 return False
 
-            # Créer le follow
             db.execute(
                 follows.insert().values(
                     follower_id=follower_id,
@@ -273,16 +204,7 @@ class UtilisateurService:
 
     @staticmethod
     def ne_plus_suivre_utilisateur(follower_id: int, followed_id: int) -> bool:
-        """
-        Arrête de suivre un utilisateur
-
-        Args:
-            follower_id: ID de l'utilisateur qui suit
-            followed_id: ID de l'utilisateur suivi
-
-        Returns:
-            True si le unfollow est effectué, False sinon
-        """
+        """Arrête de suivre un utilisateur"""
         db = SessionLocal()
         try:
             result = db.execute(
@@ -303,18 +225,12 @@ class UtilisateurService:
 
     @staticmethod
     def obtenir_utilisateurs_suivis(user_id: int) -> List[Utilisateur]:
-        """
-        Récupère la liste des utilisateurs suivis par un utilisateur
-
-        Args:
-            user_id: ID de l'utilisateur
-
-        Returns:
-            Liste des utilisateurs suivis
-        """
+        """Récupère la liste des utilisateurs suivis par un utilisateur"""
         db = SessionLocal()
         try:
-            utilisateur = db.query(Utilisateur).filter(Utilisateur.id == user_id).first()
+            statement = select(Utilisateur).where(Utilisateur.id == user_id)
+            utilisateur = db.execute(statement).scalars().first()
+            
             if not utilisateur:
                 return []
 
@@ -325,18 +241,12 @@ class UtilisateurService:
 
     @staticmethod
     def obtenir_followers(user_id: int) -> List[Utilisateur]:
-        """
-        Récupère la liste des followers d'un utilisateur
-
-        Args:
-            user_id: ID de l'utilisateur
-
-        Returns:
-            Liste des followers
-        """
+        """Récupère la liste des followers d'un utilisateur"""
         db = SessionLocal()
         try:
-            utilisateur = db.query(Utilisateur).filter(Utilisateur.id == user_id).first()
+            statement = select(Utilisateur).where(Utilisateur.id == user_id)
+            utilisateur = db.execute(statement).scalars().first()
+            
             if not utilisateur:
                 return []
 
@@ -347,16 +257,7 @@ class UtilisateurService:
 
     @staticmethod
     def est_suivi_par(user_id: int, follower_id: int) -> bool:
-        """
-        Vérifie si un utilisateur est suivi par un autre
-
-        Args:
-            user_id: ID de l'utilisateur potentiellement suivi
-            follower_id: ID du follower potentiel
-
-        Returns:
-            True si user_id est suivi par follower_id
-        """
+        """Vérifie si un utilisateur est suivi par un autre"""
         db = SessionLocal()
         try:
             result = db.execute(
@@ -378,7 +279,10 @@ class UtilisateurService:
         """Retourne le nombre total d'activités d'un utilisateur"""
         db = SessionLocal()
         try:
-            return db.query(Activite).filter(Activite.utilisateur_id == user_id).count()
+            # Utilisation de la fonction count() pour compter
+            from sqlalchemy.sql import func
+            count_stmt = select(func.count(Activite.id)).where(Activite.utilisateur_id == user_id)
+            return db.execute(count_stmt).scalar_one()
         finally:
             db.close()
 
@@ -387,10 +291,9 @@ class UtilisateurService:
         """Retourne le nombre de followers d'un utilisateur"""
         db = SessionLocal()
         try:
-            result = db.execute(
-                follows.select().where(follows.c.followed_id == user_id)
-            ).fetchall()
-            return len(result)
+            from sqlalchemy.sql import func
+            count_stmt = select(func.count()).select_from(follows).where(follows.c.followed_id == user_id)
+            return db.execute(count_stmt).scalar_one()
         finally:
             db.close()
 
@@ -399,9 +302,8 @@ class UtilisateurService:
         """Retourne le nombre d'utilisateurs suivis"""
         db = SessionLocal()
         try:
-            result = db.execute(
-                follows.select().where(follows.c.follower_id == user_id)
-            ).fetchall()
-            return len(result)
+            from sqlalchemy.sql import func
+            count_stmt = select(func.count()).select_from(follows).where(follows.c.follower_id == user_id)
+            return db.execute(count_stmt).scalar_one()
         finally:
             db.close()

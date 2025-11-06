@@ -13,8 +13,9 @@ class ActiviteService:
     """Service pour gérer toutes les opérations liées aux activités"""
 
     @staticmethod
+    @staticmethod
     def creer_activite_depuis_gpx(
-        fichier_gpx: str,
+        fichier_gpx: str, # Le chemin du fichier
         utilisateur_id: int,
         nom: str,
         type_sport: str,
@@ -22,71 +23,26 @@ class ActiviteService:
     ) -> Optional[Activite]:
         """
         Crée une activité à partir d'un fichier GPX
-
-        Args:
-            fichier_gpx: Chemin vers le fichier GPX
-            utilisateur_id: ID de l'utilisateur
-            nom: Nom de l'activité
-            type_sport: Type de sport (course, vélo, natation, etc.)
-            description: Description optionnelle
-
-        Returns:
-            L'activité créée ou None en cas d'erreur
         """
-        try:
-            # Parser le fichier GPX
-            with open(fichier_gpx, 'r') as gpx_file:
-                gpx = gpxpy.parse(gpx_file)
-        except FileNotFoundError:
-            print(f"Le fichier GPX '{fichier_gpx}' n'existe pas")
-            return None
-        except Exception as e:
-            print(f"Erreur lors de la lecture du fichier GPX: {e}")
+        from utils.gpx_parser import analyser_gpx # Import local pour éviter les conflits
+
+        # 1. Parser et extraire les données
+        parsed_data = analyser_gpx(fichier_gpx)
+        
+        if not parsed_data:
+            # Le logger/print dans analyser_gpx gère l'erreur
             return None
 
-        # Vérifier qu'il y a des données
-        if not gpx.tracks or not gpx.tracks[0].segments or not gpx.tracks[0].segments[0].points:
-            print("Le fichier GPX ne contient pas de données de trace valides")
-            return None
-
-        # Extraire les points
-        points = []
-        for track in gpx.tracks:
-            for segment in track.segments:
-                points.extend(segment.points)
-
-        if len(points) < 2:
-            print("Le fichier GPX doit contenir au moins 2 points")
-            return None
-
-        # Calculer la date de l'activité
-        date_activite = points[0].time.date() if points[0].time else date.today()
-
-        # Calculer la durée
-        if points[0].time and points[-1].time:
-            duree_totale = points[-1].time - points[0].time
-            duree_secondes = int(duree_totale.total_seconds())
-        else:
-            duree_secondes = 0
-
-        # Calculer le dénivelé positif
-        d_plus = 0
-        for i in range(1, len(points)):
-            if points[i].elevation and points[i-1].elevation:
-                diff = points[i].elevation - points[i-1].elevation
-                if diff > 0:
-                    d_plus += diff
-        d_plus = int(d_plus)
-
-        # Calculer les calories
+        # Extraction des données
+        duree_secondes = parsed_data.get('duree_secondes', 0)
+        d_plus = int(parsed_data.get('denivele_positif', 0))
+        date_activite = parsed_data.get('date_debut', date.today()).date() if parsed_data.get('date_debut') else date.today()
+        
+        # Calcul des calories
         duree_heures = duree_secondes / 3600 if duree_secondes > 0 else 0
         calories = ActiviteService._calculer_calories(type_sport, duree_heures, d_plus)
-
-        # Lire le contenu du fichier GPX en bytes pour le stocker
-        with open(fichier_gpx, 'rb') as f:
-            fichier_gpx_bytes = f.read()
-
-        # Créer l'activité en base
+        
+        # 2. Créer l'activité en base (en passant la session `db`)
         db = SessionLocal()
         try:
             activite = Activite(
@@ -95,7 +51,8 @@ class ActiviteService:
                 date_activite=date_activite,
                 duree_activite=duree_secondes,
                 description=description,
-                gpx_path=gpx_path,
+                # On stocke le chemin du fichier dans le champ gpx_path (assurez-vous que ce champ existe dans votre modèle Activite!)
+                gpx_path=fichier_gpx, 
                 d_plus=d_plus,
                 calories=calories,
                 utilisateur_id=utilisateur_id

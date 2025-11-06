@@ -1,29 +1,34 @@
 from sqlalchemy import (
-    create_engine, Column, Integer, String, Float,
-    Date, Text, LargeBinary, ForeignKey, Table
+    Column, Integer, String, Float,
+    Date, Text, LargeBinary, ForeignKey, Table,
 )
-from sqlalchemy.orm import declarative_base, relationship
-from database import Base
+from sqlalchemy.orm import relationship
+from src.database import Base
 
 # --- Tables de Liaison (Many-to-Many) ---
 
-# Table de liaison pour les followers (Follow)
-follows = Table('Follow', Base.metadata,
-                Column('follower_id', Integer, ForeignKey('Utilisateur.id'), primary_key=True),
-                Column('followed_id', Integer, ForeignKey('Utilisateur.id'), primary_key=True)
-                )
+follows = Table(
+    'Follow', 
+    Base.metadata,
+    Column('follower_id', Integer, ForeignKey('Utilisateur.id'), primary_key=True),
+    Column('followed_id', Integer, ForeignKey('Utilisateur.id'), primary_key=True), 
+    extend_existing=True
+)
 
-# Table de liaison pour les Likes sur les activités
-likes = Table('Like', Base.metadata,
-              Column('utilisateur_id', Integer, ForeignKey('Utilisateur.id'), primary_key=True),
-              Column('activite_id', Integer, ForeignKey('Activite.id'), primary_key=True)
-              )
+likes = Table(
+    'Like', 
+    Base.metadata,
+    Column('utilisateur_id', Integer, ForeignKey('Utilisateur.id'), primary_key=True),
+    Column('activite_id', Integer, ForeignKey('Activite.id'), primary_key=True), 
+    extend_existing=True
+)
 
 
 # --- Classes ORM Principales ---
 
 class Utilisateur(Base):
     __tablename__ = 'Utilisateur'
+    __table_args__ = {'extend_existing': True}
 
     id = Column(Integer, primary_key=True)
     nom = Column(String, nullable=False)
@@ -34,22 +39,22 @@ class Utilisateur(Base):
     poids = Column(Float)
     photo_profil = Column(LargeBinary)
     mail = Column(String, unique=True, nullable=False)
-    telephone = Column(Integer)
+    telephone = Column(String)
     mdp = Column(String, nullable=False)
 
-    # Relations ORM
+    # Relations ORM - AVEC chemins complets
     followers = relationship(
-        "Utilisateur",
+        "business_objects.models.Utilisateur",  # <--- MODIFIÉ
         secondary=follows,
         primaryjoin=(follows.c.followed_id == id),
         secondaryjoin=(follows.c.follower_id == id),
         backref="following",
         lazy='dynamic'
     )
-    activites = relationship("Activite", back_populates="utilisateur")
-    commentaires = relationship("Commentaire", back_populates="auteur")
+    activites = relationship("business_objects.models.Activite", back_populates="utilisateur") # <--- MODIFIÉ
+    commentaires = relationship("business_objects.models.Commentaire", back_populates="auteur") # <--- MODIFIÉ
     liked_activites = relationship(
-        "Activite",
+        "business_objects.models.Activite", # <--- MODIFIÉ
         secondary=likes,
         back_populates="likers"
     )
@@ -60,11 +65,12 @@ class Utilisateur(Base):
 
 class Activite(Base):
     __tablename__ = 'Activite'
+    __table_args__ = {'extend_existing': True}
 
     id = Column(Integer, primary_key=True)
     nom = Column(String(255))
     type_sport = Column(String, nullable=False, default="unknow")
-    date_activite = Column(Date, nullable=False, default="unknow")
+    date_activite = Column(Date, nullable=False)
     duree_activite = Column(Integer)
     description = Column(Text, nullable=True)
     gpx_path = Column(String(512))
@@ -74,12 +80,14 @@ class Activite(Base):
     utilisateur_id = Column(Integer, ForeignKey('Utilisateur.id'), nullable=False)
 
     # Relations ORM
-    utilisateur = relationship("Utilisateur", back_populates="activites")
+    utilisateur = relationship("business_objects.models.Utilisateur", back_populates="activites") # <--- MODIFIÉ
     commentaires = relationship(
-        "Commentaire", back_populates="activite", cascade="all, delete-orphan"
-        )
+        "business_objects.models.Commentaire", # <--- MODIFIÉ
+        back_populates="activite", 
+        cascade="all, delete-orphan"
+    )
     likers = relationship(
-        "Utilisateur",
+        "business_objects.models.Utilisateur", # <--- MODIFIÉ
         secondary=likes,
         back_populates="liked_activites"
     )
@@ -90,6 +98,7 @@ class Activite(Base):
 
 class Commentaire(Base):
     __tablename__ = 'Commentaire'
+    __table_args__ = {'extend_existing': True}
 
     id = Column(Integer, primary_key=True)
     contenu = Column(Text, nullable=False)
@@ -98,8 +107,8 @@ class Commentaire(Base):
     auteur_id = Column(Integer, ForeignKey('Utilisateur.id'), nullable=False)
 
     # Relations ORM
-    activite = relationship("Activite", back_populates="commentaires")
-    auteur = relationship("Utilisateur", back_populates="commentaires")
+    activite = relationship("business_objects.models.Activite", back_populates="commentaires") # <--- MODIFIÉ
+    auteur = relationship("business_objects.models.Utilisateur", back_populates="commentaires") # <--- MODIFIÉ
 
     def __repr__(self):
         return f"<Commentaire(id={self.id}, activite_id={self.activite_id})>"
