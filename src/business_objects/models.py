@@ -39,11 +39,7 @@ class Utilisateur(Base):
     poids = Column(Float)
     photo_profil = Column(LargeBinary)
     mail = Column(String, unique=True, nullable=False)
-<<<<<<< HEAD
     telephone = Column(String)
-=======
-    telephone = Column(String, nullable=True)
->>>>>>> 753f712abfb667f39fe7111f066dd9a6610e1f66
     mdp = Column(String, nullable=False)
 
     # Relations ORM - AVEC chemins complets
