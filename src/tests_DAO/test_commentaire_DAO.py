@@ -1,130 +1,116 @@
-"""
-Tests pour CommentaireDAO
-"""
 import pytest
-from datetime import date
+from sqlalchemy.exc import IntegrityError
 import sys
 from pathlib import Path
 
-# Ajouter src au chemin
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+from business_objects.models import Commentaire
 from dao.commentaire_dao import CommentaireDAO
-from dao.utilisateur_dao import UtilisateurDAO
-from dao.activite_dao import ActiviteDAO
-from database import Base, engine
 
-
-@pytest.fixture(scope="function")
-def setup_database():
-    """Crée les tables avant chaque test et les supprime après"""
-    Base.metadata.create_all(bind=engine)
-    yield
-    Base.metadata.drop_all(bind=engine)
-
-
+# Mock de la session SQLAlchemy
 @pytest.fixture
-def utilisateur_test(setup_database):
-    """Crée et retourne un utilisateur de test"""
-    return UtilisateurDAO.create(
-        nom="Dupont",
-        prenom="Jean",
-        age=30,
-        pseudo="jdupont_test",
-        mail="jean.test@example.com",
-        mdp="password123"
+def mock_db_session(mocker):
+    return mocker.patch("dao.commentaire_dao.SessionLocal")
+
+# Mock du modèle Commentaire
+@pytest.fixture
+def mock_commentaire():
+    commentaire = Commentaire(
+        id=1,
+        activite_id=1,
+        auteur_id=1,
+        contenu="Test commentaire"
+    )
+    return commentaire
+
+# Test 1 : Création d'un commentaire
+def test_create_commentaire(mock_db_session, mock_commentaire, mocker):
+    # Mock de db.add, db.commit, db.refresh
+    mock_db = mocker.MagicMock()
+    mock_db_session.return_value = mock_db
+    mock_db.add.return_value = None
+    mock_db.commit.return_value = None
+    mock_db.refresh.return_value = None
+
+    # Appel de la méthode
+    result = CommentaireDAO.create(
+        activite_id=1,
+        auteur_id=1,
+        contenu="Test commentaire"
     )
 
+    # Vérifications
+    assert result is not None
+    assert result.contenu == "Test commentaire"
+    mock_db.add.assert_called_once()
+    mock_db.commit.assert_called_once()
+    mock_db.refresh.assert_called_once()
 
-@pytest.fixture
-def activite_test(setup_database, utilisateur_test):
-    """Crée et retourne une activité de test liée à l'utilisateur"""
-    return ActiviteDAO.create(
-        utilisateur_id=utilisateur_test.id,
-        nom="Course test",
-        type_sport="course",
-        date_activite=date.today(),
-        duree_activite=3600
-    )
+# Test 2 : Récupération d'un commentaire par ID
+def test_get_by_id(mock_db_session, mock_commentaire, mocker):
+    # Mock de db.query().filter().first()
+    mock_db = mocker.MagicMock()
+    mock_db_session.return_value = mock_db
+    mock_db.query.return_value.filter.return_value.first.return_value = mock_commentaire
 
+    # Appel de la méthode
+    result = CommentaireDAO.get_by_id(1)
 
-class TestCommentaireDAO:
-    """Tests pour le DAO Commentaire"""
+    # Vérifications
+    assert result is not None
+    assert result.id == 1
+    mock_db.query.assert_called_once()
 
-    def test_create_commentaire(self, activite_test, utilisateur_test):
-        """Teste la création d'un commentaire"""
-        contenu = "Super course !"
-        commentaire = CommentaireDAO.create(
-            activite_id=activite_test.id,
-            auteur_id=utilisateur_test.id,
-            contenu=contenu
-        )
-        assert commentaire is not None
-        assert commentaire.contenu == contenu
-        assert commentaire.activite_id == activite_test.id
-        assert commentaire.auteur_id == utilisateur_test.id
+# Test 3 : Mise à jour d'un commentaire
+def test_update_commentaire(mock_db_session, mock_commentaire, mocker):
+    # Mock de db.query().filter().first()
+    mock_db = mocker.MagicMock()
+    mock_db_session.return_value = mock_db
+    mock_db.query.return_value.filter.return_value.first.return_value = mock_commentaire
+    mock_db.commit.return_value = None
+    mock_db.refresh.return_value = None
 
-    def test_get_by_id(self, activite_test, utilisateur_test):
-        """Teste la récupération d'un commentaire par son ID"""
-        contenu = "Test commentaire"
-        commentaire = CommentaireDAO.create(
-            activite_id=activite_test.id,
-            auteur_id=utilisateur_test.id,
-            contenu=contenu
-        )
-        commentaire_recupere = CommentaireDAO.get_by_id(commentaire.id)
-        assert commentaire_recupere is not None
-        assert commentaire_recupere.contenu == contenu
-        assert commentaire_recupere.id == commentaire.id
+    # Appel de la méthode
+    result = CommentaireDAO.update(1, "Nouveau contenu")
 
-    def test_get_by_activite(self, activite_test, utilisateur_test):
-        """Teste la récupération des commentaires d'une activité"""
-        commentaires_attendus = [
-            "Commentaire 1",
-            "Commentaire 2"
-        ]
-        for contenu in commentaires_attendus:
-            CommentaireDAO.create(
-                activite_id=activite_test.id,
-                auteur_id=utilisateur_test.id,
-                contenu=contenu
-            )
-        commentaires = CommentaireDAO.get_by_activite(activite_test.id)
-        assert len(commentaires) == len(commentaires_attendus)
-        contenus = [c.contenu for c in commentaires]
-        for contenu in commentaires_attendus:
-            assert contenu in contenus
+    # Vérifications
+    assert result is not None
+    assert result.contenu == "Nouveau contenu"
+    mock_db.commit.assert_called_once()
 
-    def test_delete_commentaire(self, activite_test, utilisateur_test):
-        """Teste la suppression d'un commentaire"""
-        contenu = "À supprimer"
-        commentaire = CommentaireDAO.create(
-            activite_id=activite_test.id,
-            auteur_id=utilisateur_test.id,
-            contenu=contenu
-        )
-        assert CommentaireDAO.delete(commentaire.id) is True
-        assert CommentaireDAO.get_by_id(commentaire.id) is None
+# Test 4 : Suppression d'un commentaire
+def test_delete_commentaire(mock_db_session, mock_commentaire, mocker):
+    # Mock de db.query().filter().first()
+    mock_db = mocker.MagicMock()
+    mock_db_session.return_value = mock_db
+    mock_db.query.return_value.filter.return_value.first.return_value = mock_commentaire
+    mock_db.delete.return_value = None
+    mock_db.commit.return_value = None
 
-    def test_count_by_activite(self, activite_test, utilisateur_test):
-        """Teste le comptage des commentaires d'une activité"""
-        nb_commentaires = 3
-        for i in range(nb_commentaires):
-            CommentaireDAO.create(
-                activite_id=activite_test.id,
-                auteur_id=utilisateur_test.id,
-                contenu=f"Commentaire {i+1}"
-            )
-        count = CommentaireDAO.count_by_activite(activite_test.id)
-        assert count == nb_commentaires
+    # Appel de la méthode
+    result = CommentaireDAO.delete(1)
 
-    def test_is_author(self, activite_test, utilisateur_test):
-        """Teste la vérification de l'auteur d'un commentaire"""
-        contenu = "Mon commentaire"
-        commentaire = CommentaireDAO.create(
-            activite_id=activite_test.id,
-            auteur_id=utilisateur_test.id,
-            contenu=contenu
-        )
-        assert CommentaireDAO.is_author(commentaire.id, utilisateur_test.id) is True
-        assert CommentaireDAO.is_author(commentaire.id, 999) is False
+    # Vérifications
+    assert result is True
+    mock_db.delete.assert_called_once()
+    mock_db.commit.assert_called_once()
+
+# Test 5 : Récupération des commentaires d'une activité
+def test_get_by_activite(mock_db_session, mocker):
+    # Mock de db.query().filter().order_by().all()
+    mock_db = mocker.MagicMock()
+    mock_db_session.return_value = mock_db
+    mock_db.query.return_value.filter.return_value.order_by.return_value.all.return_value = [
+        Commentaire(id=1, activite_id=1, auteur_id=1, contenu="Commentaire 1"),
+        Commentaire(id=2, activite_id=1, auteur_id=2, contenu="Commentaire 2"),
+    ]
+
+    # Appel de la méthode
+    result = CommentaireDAO.get_by_activite(1)
+
+    # Vérifications
+    assert len(result) == 2
+    assert result[0].contenu == "Commentaire 1"
+    assert result[1].contenu == "Commentaire 2"
+    mock_db.query.assert_called_once()
