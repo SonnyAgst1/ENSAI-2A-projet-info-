@@ -7,12 +7,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.exceptions import RequestValidationError
 from database import Base, engine
+import logging 
+from business_objects import models
 
 # Créer les tables
 Base.metadata.create_all(bind=engine)
 
 # Créer l'application
-app = FastAPI(docs_url="/docs", redoc_url=None, openapi_url="/openapi.json")
+app = FastAPI(debug=True, docs_url="/docs", redoc_url=None, openapi_url="/openapi.json")
 
 # Configuration CORS
 app.add_middleware(
@@ -182,14 +184,17 @@ async def not_found_handler(request: Request, exc):
     )
 
 
+# Logger Uvicorn (écrit la trace complète dans la console)
+logger = logging.getLogger("uvicorn.error")
+
 @app.exception_handler(500)
 async def internal_error_handler(request: Request, exc):
-    """Gestionnaire pour les erreurs internes"""
+    logger.exception("Internal server error")  # <-- imprime la traceback complète
     return JSONResponse(
         status_code=500,
         content={
             "message": "Erreur interne du serveur",
-            "aide": "Contactez le support si le problème persiste"
+            "aide": "Une erreur est survenue. Regarde la console pour la trace complète."
         }
     )
 
