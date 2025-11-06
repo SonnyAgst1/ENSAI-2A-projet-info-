@@ -34,7 +34,7 @@ class Utilisateur(Base):
     poids = Column(Float)
     photo_profil = Column(LargeBinary)
     mail = Column(String, unique=True, nullable=False)
-    telephone = Column(Integer)
+    telephone = Column(String, nullage = True)
     mdp = Column(String, nullable=False)
 
     # Relations ORM
