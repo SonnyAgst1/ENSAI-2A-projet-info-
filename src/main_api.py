@@ -12,123 +12,7 @@ from database import Base, engine
 Base.metadata.create_all(bind=engine)
 
 # Créer l'application
-app = FastAPI(
-    title="Application Sportive API",
-    description="""
-    API complète pour une application de suivi sportif.
-    
-    ## Fonctionnalités
-    
-    ### 👤 Utilisateurs
-    * Créer un compte (inscription)
-    * Se connecter
-    * Modifier son profil
-    * Supprimer son compte
-    * Suivre/Ne plus suivre des utilisateurs
-    * Voir ses abonnements et followers
-    * Obtenir des suggestions d'utilisateurs
-    
-    ### 🏃 Activités (F1)
-    * ✅ Créer une activité manuellement
-    * ✅ Créer une activité depuis un fichier GPX
-    * ✅ Consulter ses activités avec filtres (sport, date)
-    * ✅ Modifier une activité
-    * ✅ Supprimer une activité
-    
-    ### 📰 Fil d'actualité (F2)
-    * ✅ Voir les activités des utilisateurs suivis
-    * ✅ Filtrer par période (7, 30, 90 jours)
-    * ✅ Rechercher des utilisateurs
-    * ✅ Obtenir des suggestions d'utilisateurs à suivre
-    * ✅ Statistiques du fil
-    
-    ### ❤️ Interactions (F3)
-    * ✅ Liker/Unliker une activité
-    * ✅ Commenter une activité
-    * ✅ Voir les likes et commentaires
-    * ✅ Modifier/Supprimer ses commentaires
-    
-    ### 📊 Statistiques (F4)
-    * ✅ Nombre d'activités par semaine et par sport
-    * ✅ Nombre de kilomètres parcourus par semaine
-    * ✅ Nombre d'heures d'activité par semaine
-    * ✅ Records personnels
-    * ✅ Analyse de progression par sport
-    * ✅ Tableau de bord complet
-    
-    ---
-    
-    ## 🚀 Démarrage rapide
-    
-    ### 1. Créer un compte
-    ```bash
-    POST /api/utilisateurs/inscription
-    {
-      "nom": "Dupont",
-      "prenom": "Jean",
-      "age": 30,
-      "pseudo": "jdupont",
-      "mail": "jean@example.com",
-      "mdp": "password123"
-    }
-    ```
-    
-    ### 2. Se connecter
-    ```bash
-    POST /api/utilisateurs/connexion
-    {
-      "pseudo": "jdupont",
-      "mdp": "password123"
-    }
-    ```
-    
-    ### 3. Créer une activité
-    ```bash
-    POST /api/activites
-    {
-      "utilisateur_id": 1,
-      "nom": "Course matinale",
-      "type_sport": "Course",
-      "date_activite": "2024-11-06",
-      "duree_activite": 3600
-    }
-    ```
-    
-    ### 4. Voir ses statistiques
-    ```bash
-    GET /api/statistiques/1/hebdomadaire
-    ```
-    
-    ---
-    
-    ## 📚 Documentation
-    
-    * **Swagger UI** : [/docs](/docs) ← Interface interactive
-    * **ReDoc** : [/redoc](/redoc) ← Documentation détaillée
-    * **OpenAPI Schema** : [/openapi.json](/openapi.json)
-    
-    ---
-    
-    ## 🔗 Endpoints principaux
-    
-    | Catégorie | Endpoint | Description |
-    |-----------|----------|-------------|
-    | 👤 Utilisateurs | `/api/utilisateurs` | Gestion des comptes |
-    | 🏃 Activités | `/api/activites` | CRUD activités + GPX |
-    | 📰 Fil | `/api/fil` | Fil d'actualité |
-    | ❤️ Interactions | `/api/interactions` | Likes & commentaires |
-    | 📊 Stats | `/api/statistiques` | Statistiques détaillées |
-    
-    """,
-    version="2.0.0",
-    contact={
-        "name": "Support",
-        "email": "support@app-sportive.com"
-    },
-    license_info={
-        "name": "MIT"
-    }
-)
+app = FastAPI(docs_url="/docs", redoc_url=None, openapi_url="/openapi.json")
 
 # Configuration CORS
 app.add_middleware(
@@ -155,11 +39,9 @@ app.include_router(statistiques_router, prefix="/api")
 
 
 # ========== ROUTES RACINES ==========
-
 @app.get("/", include_in_schema=False)
 def redirect_docs():
-    """Redirige la racine vers la documentation Swagger"""
-    return RedirectResponse(url="/docs")
+    return RedirectResponse(url="docs")  # pas de slash initial
 
 
 @app.get("/api", tags=["📋 Info"])

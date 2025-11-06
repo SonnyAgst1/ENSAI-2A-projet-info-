@@ -12,3 +12,4 @@ InquirerPy
 gpxpy
 bcrypt
 python-multipart
+sqlmodel
