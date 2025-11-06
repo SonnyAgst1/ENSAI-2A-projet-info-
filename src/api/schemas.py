@@ -22,7 +22,7 @@ class UtilisateurCreate(BaseModel):
     mdp: str
     taille: Optional[float] = None
     poids: Optional[float] = None
-    telephone: Optional[int] = None
+    telephone: Optional[str] = None
 
 
 class UtilisateurLogin(BaseModel):
@@ -41,7 +41,7 @@ class UtilisateurOut(BaseModel):
     mail: str
     taille: Optional[float] = None
     poids: Optional[float] = None
-    telephone: Optional[int] = None
+    telephone: Optional[str] = None
 
     model_config = dict(from_attributes=True)
 

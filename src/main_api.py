@@ -11,6 +11,7 @@ from business_objects import models # IMPÉRATIF: Importe les modèles pour que 
 from dao.utilisateur_dao import UtilisateurDAO
 from dao.activite_dao import ActiviteDAO
 
+<<<<<<< HEAD
 # =================================================================
 # 1. CRÉATION DE L'APPLICATION (DOIT ÊTRE FAIT AVANT d'utiliser 'app')
 # =================================================================
@@ -156,6 +157,13 @@ def init_db_on_startup():
     
     print("✅ Création des tables terminée (si elles n'existaient pas).\n")
 
+=======
+# Créer les tables
+Base.metadata.create_all(bind=engine)
+
+# Créer l'application
+app = FastAPI(docs_url="/docs", redoc_url=None, openapi_url="/openapi.json")
+>>>>>>> 753f712abfb667f39fe7111f066dd9a6610e1f66
 
 # Configuration CORS
 app.add_middleware(
@@ -176,11 +184,9 @@ app.include_router(statistiques_router, prefix="/api")
 
 
 # ========== ROUTES RACINES ==========
-
 @app.get("/", include_in_schema=False)
 def redirect_docs():
-    """Redirige la racine vers la documentation Swagger"""
-    return RedirectResponse(url="/docs")
+    return RedirectResponse(url="docs")  # pas de slash initial
 
 
 @app.get("/api", tags=["📋 Info"])
