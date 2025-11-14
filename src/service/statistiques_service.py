@@ -98,7 +98,7 @@ class StatistiquesService:
                 # Pour avoir la distance, il faudrait l'extraire du fichier GPX
                 # Ici on utilise d_plus comme proxy (à adapter selon vos besoins)
                 if activite.distance:
-                    stats[cle_semaine] += activite.distance / 1000.0  # Convertir en km
+                    stats[cle_semaine] += activite.distance  
 
             return dict(stats)
 
@@ -233,7 +233,7 @@ class StatistiquesService:
                     stats[sport]['duree_totale_heures'] += activite.duree_activite / 3600.0
 
                 if activite.distance:
-                    stats[sport]['distance_totale_km'] += activite.distance / 1000.0
+                    stats[sport]['distance_totale_km'] += activite.distance 
                     stats[sport]['denivele_total'] += activite.d_plus
 
                 if activite.calories:
@@ -422,7 +422,7 @@ class StatistiquesService:
                 }
 
             duree_totale = sum(a.duree_activite or 0 for a in activites) / 3600
-            distance_totale = sum(a.distance or 0 for a in activites) / 1000
+            distance_totale = sum(a.distance or 0 for a in activites) 
             calories_totales = sum(a.calories or 0 for a in activites)
             sports_pratiques = list(set(a.type_sport for a in activites))
 
