@@ -7,3 +7,5 @@ $env:PYTHONPATH = "$PWD\src"
 python -m uvicorn src.main_api:app --reload --host 0.0.0.0 --port 9000 --app-dir src
 commande lancer api : 
 python -m uvicorn main_api:app --reload --host 0.0.0.0 --port 8000 --app-dir src
+
+streamlit run app.py

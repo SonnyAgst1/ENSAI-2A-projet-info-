@@ -83,7 +83,7 @@ class StatistiquesService:
                 and_(
                     Activite.utilisateur_id == utilisateur_id,
                     Activite.date_activite >= date_debut,
-                    Activite.d_plus.isnot(None)
+                    Activite.distance.isnot(None)
                 )
             ).all()
 
@@ -97,8 +97,8 @@ class StatistiquesService:
                 # d_plus représente le dénivelé, pas la distance
                 # Pour avoir la distance, il faudrait l'extraire du fichier GPX
                 # Ici on utilise d_plus comme proxy (à adapter selon vos besoins)
-                if activite.d_plus:
-                    stats[cle_semaine] += activite.d_plus / 1000.0  # Convertir en km
+                if activite.distance:
+                    stats[cle_semaine] += activite.distance / 1000.0  # Convertir en km
 
             return dict(stats)
 
@@ -232,8 +232,8 @@ class StatistiquesService:
                 if activite.duree_activite:
                     stats[sport]['duree_totale_heures'] += activite.duree_activite / 3600.0
 
-                if activite.d_plus:
-                    stats[sport]['distance_totale_km'] += activite.d_plus / 1000.0
+                if activite.distance:
+                    stats[sport]['distance_totale_km'] += activite.distance / 1000.0
                     stats[sport]['denivele_total'] += activite.d_plus
 
                 if activite.calories:
@@ -286,7 +286,7 @@ class StatistiquesService:
                 progression.append({
                     'date': activite.date_activite.isoformat(),
                     'duree_minutes': activite.duree_activite / 60 if activite.duree_activite else 0,
-                    'distance_km': activite.d_plus / 1000 if activite.d_plus else 0,
+                    'distance_km': activite.distance/ 1000 if activite.distance else 0,
                     'calories': activite.calories or 0
                 })
 
@@ -422,7 +422,7 @@ class StatistiquesService:
                 }
 
             duree_totale = sum(a.duree_activite or 0 for a in activites) / 3600
-            distance_totale = sum(a.d_plus or 0 for a in activites) / 1000
+            distance_totale = sum(a.distance or 0 for a in activites) / 1000
             calories_totales = sum(a.calories or 0 for a in activites)
             sports_pratiques = list(set(a.type_sport for a in activites))
 
