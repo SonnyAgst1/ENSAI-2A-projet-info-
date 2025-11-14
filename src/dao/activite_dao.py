@@ -26,7 +26,8 @@ class ActiviteDAO:
         gpx_path: Optional[str] = None,  # AJOUTER ce paramètre
         fichier_gpx: Optional[bytes] = None,  # Garder celui-ci
         d_plus: int = 0,
-        calories: int = 0
+        calories: int = 0,
+        distance: float = 0 
     ) -> Optional[Activite]:
         """
         Crée une nouvelle activité en base de données
@@ -56,7 +57,8 @@ class ActiviteDAO:
                 description=description,
                 fichier_gpx=fichier_gpx,
                 d_plus=d_plus,
-                calories=calories
+                calories=calories,
+                distance=distance
             )
 
             db.add(activite)

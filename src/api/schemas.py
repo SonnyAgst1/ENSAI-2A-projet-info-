@@ -65,10 +65,11 @@ class ActiviteCreate(BaseModel):
     nom: str
     type_sport: str
     date_activite: date
-    duree_activite: int  # en secondes
+    duree_activite: int
     description: Optional[str] = None
     d_plus: Optional[int] = None
     calories: Optional[int] = None
+    distance: Optional[float] = None  # ← AJOUT ICI
 
 
 class ActiviteOut(BaseModel):
@@ -81,6 +82,7 @@ class ActiviteOut(BaseModel):
     description: Optional[str] = None
     d_plus: Optional[int] = None
     calories: Optional[int] = None
+    distance: Optional[float] = None  # ← AJOUT ICI
     utilisateur_id: int
     gpx_path: Optional[str] = None
 

@@ -36,6 +36,7 @@ class ActiviteService:
         # Extraction des données
         duree_secondes = parsed_data.get('duree_secondes', 0)
         d_plus = int(parsed_data.get('denivele_positif', 0))
+        distance = parsed_data.get('distance', 0)
         date_activite = parsed_data.get('date_debut', date.today()).date() if parsed_data.get('date_debut') else date.today()
         
         # Calcul des calories
@@ -55,6 +56,7 @@ class ActiviteService:
                 gpx_path=fichier_gpx, 
                 d_plus=d_plus,
                 calories=calories,
+                distance=distance,
                 utilisateur_id=utilisateur_id
             )
 
@@ -79,6 +81,7 @@ class ActiviteService:
         duree_activite: int,  # en secondes
         description: str = "",
         d_plus: int = 0,
+        distance: float = 0,
         calories: int = 0
     ) -> Optional[Activite]:
         """
@@ -107,6 +110,7 @@ class ActiviteService:
                 description=description,
                 d_plus=d_plus,
                 calories=calories,
+                distance=distance,
                 utilisateur_id=utilisateur_id
             )
 

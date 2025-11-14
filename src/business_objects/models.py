@@ -76,7 +76,8 @@ class Activite(Base):
     gpx_path = Column(String(512))
     d_plus = Column(Integer, nullable=True)
     calories = Column(Integer, nullable=True)
-
+    distance = Column(Float, nullable=True)  # ← AJOUT ICI (en km)
+    
     utilisateur_id = Column(Integer, ForeignKey('Utilisateur.id'), nullable=False)
 
     # Relations ORM
