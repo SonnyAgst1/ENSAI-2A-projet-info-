@@ -242,7 +242,75 @@ def get_commentaires(activite_id):
         return []
     except:
         return []
+def suivre_utilisateur(user_id, followed_id):
+    """Suivre un utilisateur"""
+    try:
+        response = requests.post(
+            f"{API_URL}/utilisateurs/{user_id}/follow/{followed_id}"
+        )
+        return response.status_code == 200
+    except:
+        return False
 
+def ne_plus_suivre_utilisateur(user_id, followed_id):
+    """Ne plus suivre un utilisateur"""
+    try:
+        response = requests.delete(
+            f"{API_URL}/utilisateurs/{user_id}/follow/{followed_id}"
+        )
+        return response.status_code == 200
+    except:
+        return False
+
+def get_utilisateurs_suivis(user_id):
+    """Récupère la liste des utilisateurs suivis"""
+    try:
+        response = requests.get(
+            f"{API_URL}/utilisateurs/{user_id}/following"
+        )
+        if response.status_code == 200:
+            return response.json()
+        return []
+    except:
+        return []
+
+def get_followers(user_id):
+    """Récupère la liste des followers"""
+    try:
+        response = requests.get(
+            f"{API_URL}/utilisateurs/{user_id}/followers"
+        )
+        if response.status_code == 200:
+            return response.json()
+        return []
+    except:
+        return []
+
+def get_suggestions_utilisateurs(user_id, limite=10):
+    """Récupère des suggestions d'utilisateurs à suivre"""
+    try:
+        response = requests.get(
+            f"{API_URL}/utilisateurs/{user_id}/suggestions",
+            params={"limite": limite}
+        )
+        if response.status_code == 200:
+            return response.json()
+        return []
+    except:
+        return []
+
+def rechercher_utilisateurs(recherche, limite=10):
+    """Recherche des utilisateurs par pseudo"""
+    try:
+        response = requests.get(
+            f"{API_URL}/utilisateurs",
+            params={"recherche": recherche, "limite": limite}
+        )
+        if response.status_code == 200:
+            return response.json()
+        return []
+    except:
+        return []
 # ========== PAGES ==========
 
 def page_connexion():
@@ -624,6 +692,161 @@ def page_statistiques():
                     st.write(f"{records['calories_maximales']['valeur']}")
                     st.caption(records['calories_maximales']['activite'])
 
+def page_communaute():
+    """Page de gestion de la communauté (follows)"""
+    user_id = st.session_state.user_id
+    
+    st.title("👥 Communauté")
+    
+    # Onglets
+    tab1, tab2, tab3, tab4 = st.tabs(["🔍 Rechercher", "⭐ Suggestions", "👤 Abonnements", "👥 Abonnés"])
+    
+    with tab1:
+        st.subheader("Rechercher des utilisateurs")
+        
+        recherche = st.text_input("Rechercher par pseudo", key="search_users")
+        
+        if recherche:
+            utilisateurs = rechercher_utilisateurs(recherche, limite=20)
+            
+            if utilisateurs:
+                st.info(f"📊 {len(utilisateurs)} utilisateur(s) trouvé(s)")
+                
+                # Récupérer la liste des utilisateurs déjà suivis
+                suivis = get_utilisateurs_suivis(user_id)
+                ids_suivis = [u['id'] for u in suivis]
+                
+                for user in utilisateurs:
+                    if user['id'] == user_id:
+                        continue  # Ne pas afficher soi-même
+                    
+                    with st.container():
+                        col1, col2, col3 = st.columns([3, 1, 1])
+                        
+                        with col1:
+                            st.write(f"**{user['pseudo']}**")
+                            st.caption(f"{user['prenom']} {user['nom']}")
+                        
+                        with col2:
+                            activites = get_activites(user['id'], limit=1000)
+                            st.metric("Activités", len(activites))
+                        
+                        with col3:
+                            if user['id'] in ids_suivis:
+                                if st.button("✅ Suivi", key=f"unfollow_{user['id']}"):
+                                    if ne_plus_suivre_utilisateur(user_id, user['id']):
+                                        st.success(f"Vous ne suivez plus {user['pseudo']}")
+                                        st.rerun()
+                            else:
+                                if st.button("➕ Suivre", key=f"follow_{user['id']}"):
+                                    if suivre_utilisateur(user_id, user['id']):
+                                        st.success(f"Vous suivez maintenant {user['pseudo']}")
+                                        st.rerun()
+                        
+                        st.divider()
+            else:
+                st.info("Aucun utilisateur trouvé")
+    
+    with tab2:
+        st.subheader("Suggestions d'utilisateurs à suivre")
+        
+        suggestions = get_suggestions_utilisateurs(user_id, limite=10)
+        
+        if suggestions:
+            st.info(f"📊 {len(suggestions)} suggestion(s)")
+            
+            for user in suggestions:
+                with st.container():
+                    col1, col2, col3 = st.columns([3, 1, 1])
+                    
+                    with col1:
+                        st.write(f"**{user['pseudo']}**")
+                        st.caption(f"{user['prenom']} {user['nom']}")
+                    
+                    with col2:
+                        activites = get_activites(user['id'], limit=1000)
+                        st.metric("Activités", len(activites))
+                    
+                    with col3:
+                        if st.button("➕ Suivre", key=f"follow_sug_{user['id']}"):
+                            if suivre_utilisateur(user_id, user['id']):
+                                st.success(f"Vous suivez maintenant {user['pseudo']}")
+                                st.rerun()
+                    
+                    st.divider()
+        else:
+            st.info("Aucune suggestion pour le moment")
+    
+    with tab3:
+        st.subheader("Mes abonnements")
+        
+        suivis = get_utilisateurs_suivis(user_id)
+        
+        if suivis:
+            st.info(f"📊 Vous suivez {len(suivis)} utilisateur(s)")
+            
+            for user in suivis:
+                with st.container():
+                    col1, col2, col3 = st.columns([3, 1, 1])
+                    
+                    with col1:
+                        st.write(f"**{user['pseudo']}**")
+                        st.caption(f"{user['prenom']} {user['nom']}")
+                    
+                    with col2:
+                        activites = get_activites(user['id'], limit=1000)
+                        st.metric("Activités", len(activites))
+                    
+                    with col3:
+                        if st.button("❌ Ne plus suivre", key=f"unfollow_list_{user['id']}"):
+                            if ne_plus_suivre_utilisateur(user_id, user['id']):
+                                st.success(f"Vous ne suivez plus {user['pseudo']}")
+                                st.rerun()
+                    
+                    st.divider()
+        else:
+            st.info("Vous ne suivez personne pour le moment")
+    
+    with tab4:
+        st.subheader("Mes abonnés")
+        
+        followers = get_followers(user_id)
+        
+        if followers:
+            st.info(f"📊 {len(followers)} personne(s) vous suivent")
+            
+            # Récupérer la liste des utilisateurs déjà suivis
+            suivis = get_utilisateurs_suivis(user_id)
+            ids_suivis = [u['id'] for u in suivis]
+            
+            for user in followers:
+                with st.container():
+                    col1, col2, col3 = st.columns([3, 1, 1])
+                    
+                    with col1:
+                        st.write(f"**{user['pseudo']}**")
+                        st.caption(f"{user['prenom']} {user['nom']}")
+                    
+                    with col2:
+                        activites = get_activites(user['id'], limit=1000)
+                        st.metric("Activités", len(activites))
+                    
+                    with col3:
+                        if user['id'] in ids_suivis:
+                            if st.button("✅ Suivi", key=f"unfollow_fol_{user['id']}"):
+                                if ne_plus_suivre_utilisateur(user_id, user['id']):
+                                    st.success(f"Vous ne suivez plus {user['pseudo']}")
+                                    st.rerun()
+                        else:
+                            if st.button("➕ Suivre", key=f"follow_fol_{user['id']}"):
+                                if suivre_utilisateur(user_id, user['id']):
+                                    st.success(f"Vous suivez maintenant {user['pseudo']}")
+                                    st.rerun()
+                    
+                    st.divider()
+        else:
+            st.info("Personne ne vous suit pour le moment")
+
 # ========== MAIN ==========
 
 def main():
@@ -636,11 +859,23 @@ def main():
         with st.sidebar:
             st.image("https://img.icons8.com/color/96/000000/running.png", width=100)
             st.title("Navigation")
+            # Afficher le nombre d'abonnements/abonnés
+            suivis = get_utilisateurs_suivis(st.session_state.user_id)
+            followers = get_followers(st.session_state.user_id)
+            
+            col1, col2 = st.columns(2)
+            with col1:
+                st.metric("Abonnements", len(suivis))
+            with col2:
+                st.metric("Abonnés", len(followers))
+            
+            st.divider()
             
             page = st.radio("", [
                 "🏠 Tableau de bord",
                 "📋 Mes activités",
                 "📰 Fil d'actualité",
+                "👥 Communauté",
                 "📊 Statistiques"
             ])
             
@@ -656,6 +891,8 @@ def main():
             page_fil()
         elif "Statistiques" in page:
             page_statistiques()
+        elif "Communauté" in page:
+            page_communaute()
 
 if __name__ == "__main__":
     main()
