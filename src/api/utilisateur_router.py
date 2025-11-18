@@ -136,8 +136,8 @@ def lister_utilisateurs(
     """
     Lister tous les utilisateurs ou rechercher par pseudo
     
-    - **recherche**: Filtre de recherche sur le pseudo (optionnel)
-    - **limite**: Nombre maximum de résultats (défaut: 50)
+    - recherche:Filtre de recherche sur le pseudo (optionnel)
+    - limite: Nombre maximum de résultats (défaut: 50)
     """
     if recherche:
         from service.fil_actualite_service import FilActualiteService

@@ -30,22 +30,6 @@ def obtenir_fil_actualite(
     - **nb_jours**: Nombre de jours à remonter (défaut: 7)
     - **limite**: Nombre maximum d'activités (défaut: 50)
     
-    **Exemple:**
-    ```
-    GET /fil/1?nb_jours=30&limite=100
-    ```
-    
-    **Réponse:**
-    ```json
-    [
-      {
-        "activite": {...},
-        "utilisateur": {...},
-        "nb_likes": 5,
-        "nb_commentaires": 3,
-        "user_has_liked": true
-      }
-    ]
     ```
     """
     fil_data = FilActualiteService.obtenir_fil_actualite(
