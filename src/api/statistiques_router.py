@@ -29,25 +29,15 @@ def obtenir_statistiques_completes(
     """
     Obtenir toutes les statistiques en une seule requête avec sections sélectives
     
-    **Sections disponibles:**
-    - **resume**: Résumé global (activités totales, durée, distance, calories, etc.)
-    - **hebdo**: Statistiques hebdomadaires (activités, heures, km par semaine)
-    - **sports**: Statistiques détaillées par sport
-    - **records**: Records personnels par sport
-    - **progression**: Analyse de progression (nécessite paramètre sports)
-    - **tableau_bord**: KPIs simplifiés (7j, 30j, totaux)
+    Sections disponibles:
+    - resume: Résumé global (activités totales, durée, distance, calories, etc.)
+    - hebdo: Statistiques hebdomadaires (activités, heures, km par semaine)
+    - sports: Statistiques détaillées par sport
+    - records: Records personnels par sport
+    - progression: Analyse de progression (nécessite paramètre sports)
+    -*tableau_bord: KPIs simplifiés (7j, 30j, totaux)
     
-    **Exemples:**
-    ```
-    # Toutes les sections (défaut)
-    GET /statistiques/1/complet?nb_semaines=12
-    
-    # Seulement résumé et hebdo
-    GET /statistiques/1/complet?sections=resume,hebdo
-    
-    # Avec progression pour Course et Vélo
-    GET /statistiques/1/complet?sections=resume,progression&sports=Course,Vélo
-    ```
+
     """
     sections_list = [s.strip() for s in sections.split(',')]
     result = {}

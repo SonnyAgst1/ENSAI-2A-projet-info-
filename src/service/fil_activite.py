@@ -1,20 +1,8 @@
 class FilDActivite:
 
-    """
-    Classe représentant un fil d'activité.
-
-    Le fil d'activité permet :
-      - d'ajouter de nouvelles activités,
-      - de rafraîchir son contenu (par exemple, recharger les activités récentes).
-
-    Pour simplifier, les activités sont stockées dans une liste interne.
-    """
-
     def __init__(self):
         """
         Constructeur de la classe FilDActivite.
-
-        Attributs :
         ----------
         activites : list
             Liste des activités actuellement présentes dans le fil.
@@ -47,12 +35,3 @@ class FilDActivite:
         print(f"Activité ajoutée : {activite}")
 
 
-# EXEMPLE D'UTILISATION
-fil = FilDActivite()
-
-# Ajout d’activités
-fil.ajouterActivite("Course à pied - 5 km")
-fil.ajouterActivite("Sortie vélo - 20 km")
-
-# Rafraîchir le fil
-fil.rafraichirFil()

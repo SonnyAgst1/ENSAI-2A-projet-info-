@@ -93,19 +93,8 @@ def creer_activite_manuelle(
     activite_data: ActiviteCreate,
     db: Session = Depends(get_db)
 ):
-    """
-    Créer une activité manuellement (sans fichier GPX) (F1)
     
-    **Paramètres:**
-    - **utilisateur_id**: ID de l'utilisateur
-    - **nom**: Nom de l'activité
-    - **type_sport**: Type de sport
-    - **date_activite**: Date (format YYYY-MM-DD)
-    - **duree_activite**: Durée en secondes
-    - **description**: Description (optionnel)
-    - **d_plus**: Dénivelé positif en mètres (optionnel)
-    - **calories**: Calories dépensées (optionnel)
-    """
+    
     activite = ActiviteService.creer_activite_manuelle(
         utilisateur_id=activite_data.utilisateur_id,
         nom=activite_data.nom,
@@ -162,10 +151,7 @@ def lister_activites_utilisateur(
     - **date_fin**: Date de fin de la période
     - **limit**: Nombre maximum d'activités à retourner
     
-    **Exemples:**
-    - `/activites/utilisateur/1` : Toutes les activités de l'utilisateur 1
-    - `/activites/utilisateur/1?type_sport=Course` : Seulement les courses
-    - `/activites/utilisateur/1?date_debut=2024-01-01&date_fin=2024-12-31` : Activités 2024
+    
     """
     activites = ActiviteService.obtenir_activites_utilisateur(
         utilisateur_id=user_id,

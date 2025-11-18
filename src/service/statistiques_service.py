@@ -1,6 +1,4 @@
-"""
-Service pour la gestion des statistiques utilisateur (F4)
-"""
+
 from typing import Dict, List
 from datetime import date, datetime, timedelta
 from collections import defaultdict

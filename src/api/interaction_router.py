@@ -34,10 +34,6 @@ def liker_activite(
     - liked: État actuel (true si liké)
     - nb_likes: Nombre total de likes
     
-    **Exemple:**
-    ```
-    POST /interactions/activites/42/like/1
-    ```
     """
     # Vérifier que l'activité existe
     activite = ActiviteService.obtenir_activite_par_id(activite_id)
@@ -79,10 +75,6 @@ def unliker_activite(
     - **activite_id**: ID de l'activité
     - **user_id**: ID de l'utilisateur
     
-    **Exemple:**
-    ```
-    DELETE /interactions/activites/42/like/1
-    ```
     """
     # Vérifier que l'activité existe
     activite = ActiviteService.obtenir_activite_par_id(activite_id)
@@ -164,13 +156,6 @@ def verifier_like(
     """
     Vérifier si un utilisateur a liké une activité
     
-    **Retourne:**
-    ```json
-    {
-      "activite_id": 42,
-      "user_id": 1,
-      "has_liked": true
-    }
     ```
     """
     has_liked = ActiviteService.utilisateur_a_like(user_id, activite_id)
@@ -201,18 +186,6 @@ def ajouter_commentaire(
     - **user_id**: ID de l'utilisateur qui commente
     - **contenu**: Contenu du commentaire (dans le body)
     
-    **Body:**
-    ```json
-    {
-      "contenu": "Super activité !"
-    }
-    ```
-    
-    **Exemple:**
-    ```
-    POST /interactions/activites/42/commentaires/1
-    Body: {"contenu": "Bravo !"}
-    ```
     """
     # Vérifier que l'activité existe
     activite = ActiviteService.obtenir_activite_par_id(activite_id)
@@ -257,11 +230,7 @@ def obtenir_commentaires(
     **Paramètres:**
     - **activite_id**: ID de l'activité
     - **limite**: Nombre maximum de commentaires (défaut: 50)
-    
-    **Exemple:**
-    ```
-    GET /interactions/activites/42/commentaires?limite=20
-    ```
+
     """
     # Vérifier que l'activité existe
     activite = ActiviteService.obtenir_activite_par_id(activite_id)
@@ -285,12 +254,6 @@ def modifier_commentaire(
     """
     Modifier un commentaire
     
-    **Body:**
-    ```json
-    {
-      "contenu": "Nouveau contenu"
-    }
-    ```
     """
     # Vérifier que le contenu n'est pas vide
     if not commentaire_data.contenu.strip():
@@ -320,9 +283,8 @@ def supprimer_commentaire(
 ):
     """
     Supprimer un commentaire
+     Seul l'auteur du commentaire devrait pouvoir le supprimer.
     
-    **Note:** Seul l'auteur du commentaire devrait pouvoir le supprimer.
-    Dans un système de production, ajouter une vérification d'authentification.
     """
     resultat = ActiviteService.supprimer_commentaire(commentaire_id)
     
@@ -346,13 +308,6 @@ def compter_commentaires(
     """
     Compter le nombre de commentaires d'une activité
     
-    **Retourne:**
-    ```json
-    {
-      "activite_id": 42,
-      "nb_commentaires": 8
-    }
-    ```
     """
     nb_commentaires = ActiviteService.obtenir_nombre_commentaires(activite_id)
     

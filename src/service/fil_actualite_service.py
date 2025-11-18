@@ -1,7 +1,4 @@
-"""
-Service pour gérer le fil d'actualité (F2)
-Placez ce fichier dans src/service/fil_actualite_service.py
-"""
+
 from typing import List
 from datetime import date, timedelta
 from sqlalchemy import desc
