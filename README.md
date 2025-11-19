@@ -79,7 +79,7 @@ PYTHONPATH=src python -m pytest src/tests_service/ -v
 # Tests des business objects
 PYTHONPATH=src python -m pytest src/tests_business_objects/ -v
 pour executer test service PYTHONPATH=src python -m pytest src/tests_service/ -v
-
+```
 
 ### Équipe
 
