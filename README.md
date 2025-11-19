@@ -81,9 +81,9 @@ PYTHONPATH=src python -m pytest src/tests_business_objects/ -v
 pour executer test service PYTHONPATH=src python -m pytest src/tests_service/ -v
 ```
 
-### Équipe
+### Groupe
 
-- **Alexis** - Architecture, tests activités
-- **Denis** - Tests DAO/Service, API
-- **Maëlys** - Modèles utilisateur, tests
-- **Sonny** - Base de données, API, structure
+- **Alexis** 
+- **Denis** 
+- **Maëlys** 
+- **Sonny** 
