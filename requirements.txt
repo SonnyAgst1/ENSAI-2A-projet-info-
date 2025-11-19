@@ -13,3 +13,4 @@ gpxpy
 bcrypt
 python-multipart
 sqlmodel
+streamlit
